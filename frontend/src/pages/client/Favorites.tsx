@@ -8,7 +8,7 @@ interface Product {
   cost: number;
   photo: string;
   codeCategory: number;
-  quantity: number;
+  count: number; // Количество на складе
 }
 
 const Favorites = () => {
@@ -21,7 +21,6 @@ const Favorites = () => {
       const res = await fetch("http://localhost:4000/favorites", {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       const data = await res.json();
       setFavorites(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -45,6 +44,28 @@ const Favorites = () => {
       }
     } catch (err) {
       console.error("Ошибка удаления", err);
+    }
+  };
+
+  const addToCart = async (productId: number) => {
+    try {
+      const res = await fetch("http://localhost:4000/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ productId, count: 1 }),
+      });
+
+      if (res.ok) {
+        alert("✅ Товар добавлен в корзину");
+      } else {
+        const error = await res.json();
+        alert(error.message || "Ошибка добавления в корзину");
+      }
+    } catch (err) {
+      console.error("Ошибка добавления в корзину", err);
     }
   };
 
@@ -79,52 +100,77 @@ const Favorites = () => {
           <p style={{ textAlign: "center", color: "#777" }}>Список избранного пуст</p>
         ) : (
           <ul style={{ listStyle: "none", padding: 0 }}>
-            {favorites.map((item) => (
-              <li
-                key={item.idProducts}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "1rem",
-                  backgroundColor: "#fff",
-                  padding: "1rem",
-                  borderRadius: "8px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-                }}
-              >
-                <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                  <img
-                    src={`/${item.photo}` || "/placeholder.jpg"}
-                    alt={item.nameProducts}
-                    style={{
-                      width: "80px",
-                      height: "80px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                      border: "1px solid #eee",
-                    }}
-                  />
-                  <div>
-                    <strong>{item.nameProducts}</strong>
-                    <div style={{ marginTop: "0.25rem", color: "#555" }}>{item.cost}₽</div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => removeFavorite(item.idProducts)}
+            {favorites.map((item) => {
+              const outOfStock = item.count === 0;
+
+              return (
+                <li
+                  key={item.idProducts}
                   style={{
-                    backgroundColor: "#ff6b6b",
-                    color: "#fff",
-                    border: "none",
-                    padding: "0.4rem 0.6rem",
-                    borderRadius: "4px",
-                    cursor: "pointer",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "1rem",
+                    backgroundColor: "#fff",
+                    padding: "1rem",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                    flexWrap: "wrap",
                   }}
                 >
-                  ✕
-                </button>
-              </li>
-            ))}
+                  <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                    <img
+                      src={`/${item.photo}` || "/placeholder.jpg"}
+                      alt={item.nameProducts}
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                        border: "1px solid #eee",
+                      }}
+                    />
+                    <div>
+                      <strong>{item.nameProducts}</strong>
+                      <div style={{ marginTop: "0.25rem", color: "#555" }}>{item.cost}₽</div>
+                      <div style={{ fontSize: "0.85rem", color: outOfStock ? "red" : "green" }}>
+                        {outOfStock ? "Нет в наличии" : `В наличии: ${item.count}`}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
+                    <button
+                      onClick={() => addToCart(item.idProducts)}
+                      disabled={outOfStock}
+                      style={{
+                        padding: "0.5rem 1rem",
+                        backgroundColor: outOfStock ? "#ccc" : "#0d6efd",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "6px",
+                        cursor: outOfStock ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {outOfStock ? "Нет в наличии" : "В корзину"}
+                    </button>
+                    <button
+                      onClick={() => removeFavorite(item.idProducts)}
+                      style={{
+                        backgroundColor: "#ff6b6b",
+                        color: "#fff",
+                        border: "none",
+                        padding: "0.4rem 0.6rem",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

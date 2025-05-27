@@ -7,7 +7,7 @@ interface Product {
   cost: number;
   photo: string;
   codeCategory: number;
-  quantity: number;
+  count: number;
 }
 
 interface Props {
@@ -104,8 +104,8 @@ const ProductCard: React.FC<Props> = ({ product }) => {
         }}
       />
       <h3>{product.nameProducts}</h3>
-      <p style={{ fontSize: "14px", color: product.quantity > 0 ? "green" : "red" }}>
-          В наличии: {product.quantity}
+      <p style={{ fontSize: "14px", color: product.count > 0 ? "green" : "red" }}>
+          В наличии: {product.count}
       </p>
 
       <p>{product.cost}₽</p>
@@ -127,19 +127,23 @@ const ProductCard: React.FC<Props> = ({ product }) => {
 
         <button
           onClick={handleAddToCart}
+          disabled={product.count === 0}
           style={{
             marginTop: "0.5rem",
-            backgroundColor: "#28a745",
+            backgroundColor: product.count === 0 ? "#ccc" : "#28a745",
             color: "#fff",
             border: "none",
             padding: "0.5rem 1rem",
             borderRadius: "6px",
-            cursor: "pointer",
+            cursor: product.count === 0 ? "not-allowed" : "pointer",
             fontWeight: "bold",
+            opacity: product.count === 0 ? 0.6 : 1,
           }}
-        >
-          🛒 Добавить в корзину
+          >
+          {product.count === 0 ? "Нет в наличии" : "🛒 Добавить в корзину"}
         </button>
+
+
 
       </div>
     </div>

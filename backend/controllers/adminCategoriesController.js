@@ -17,7 +17,7 @@ const createCategory = async (req, res) => {
   }
 
   try {
-    await db.query('INSERT INTO categories (nameCategory) VALUES (?)', [nameCategory]);
+    await db.query('INSERT INTO categories (title) VALUES (?)', [nameCategory]);
     res.status(201).json({ message: 'Категория добавлена' });
   } catch (err) {
     console.error('Ошибка добавления категории:', err);
@@ -30,7 +30,7 @@ const updateCategory = async (req, res) => {
   const { nameCategory } = req.body;
 
   try {
-    await db.query('UPDATE categories SET nameCategory = ? WHERE idCategory = ?', [nameCategory, id]);
+    await db.query('UPDATE categories SET title = ? WHERE idCategory = ?', [nameCategory, id]);
     res.json({ message: 'Категория обновлена' });
   } catch (err) {
     console.error('Ошибка обновления категории:', err);

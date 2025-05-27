@@ -10,6 +10,9 @@ import Cart from "./pages/client/Cart";
 import Favorites from "./pages/client/Favorites";
 import Profile from "./pages/client/Profile";
 import Orders from "./pages/client/Orders";
+import AdminOrders from "./pages/admin/AdminOrders";
+import CategoriesPage from './pages/admin/CategoriesPage';
+
 
 // Компонент автоматической переадресации
 const RoleRedirect = () => {
@@ -43,6 +46,8 @@ const App = () => {
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/admin/orders" element={<AdminOrders />} />
+        <Route path="/admin/categories" element={<CategoriesPage />} />
       </Routes>
     </Router>
   );

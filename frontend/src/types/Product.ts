@@ -5,5 +5,5 @@ export interface Product {
   cost: number;
   photo: string;
   codeCategory: number;
-  quantity: number;
+  count: number;
 }

@@ -8,6 +8,7 @@ interface CartItem {
   cost: number;
   image: string;
   count: number;
+  availableStock: number; // Теперь приходит с сервера
 }
 
 const Cart = () => {
@@ -51,7 +52,9 @@ const Cart = () => {
   };
 
   const updateCount = async (productId: number, newCount: number) => {
-    if (newCount < 1) return;
+    const item = cart.find((i) => i.idProducts === productId);
+    if (!item) return;
+    if (newCount < 1 || newCount > item.availableStock) return;
 
     try {
       const res = await fetch(`http://localhost:4000/cart/${productId}`, {
@@ -65,8 +68,8 @@ const Cart = () => {
 
       if (res.ok) {
         setCart((prev) =>
-          prev.map((item) =>
-            item.idProducts === productId ? { ...item, count: newCount } : item
+          prev.map((i) =>
+            i.idProducts === productId ? { ...i, count: newCount } : i
           )
         );
       } else {
@@ -127,60 +130,74 @@ const Cart = () => {
         ) : (
           <>
             <ul style={{ listStyle: "none", padding: 0 }}>
-              {cart.map((item) => (
-                <li
-                  key={item.idBasket}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    marginBottom: "1rem",
-                    backgroundColor: "#fff",
-                    padding: "1rem",
-                    borderRadius: "8px",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <div style={{ display: "flex", gap: "1rem", flex: 1, alignItems: "center" }}>
-                    <img
-                      src={item.image || "/placeholder.jpg"}
-                      alt={item.name}
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                        border: "1px solid #eee",
-                      }}
-                    />
-                    <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                      <strong style={{ fontSize: "1.1rem" }}>{item.name}</strong>
-                      <div style={{ marginTop: "0.5rem", display: "flex" }}>
-                        <button
-                          onClick={() => updateCount(item.idProducts, item.count - 1)}
-                          style={buttonStyle}
-                        >
-                          −
-                        </button>
-                        <span>{item.count}</span>
-                        <button
-                          onClick={() => updateCount(item.idProducts, item.count + 1)}
-                          style={buttonStyle}
-                        >
-                          +
-                        </button>
-                      </div>
-                      <div style={{ marginTop: "0.5rem", color: "#555" }}>
-                        {item.cost}₽ × {item.count} = <strong>{item.cost * item.count}₽</strong>
+              {cart.map((item) => {
+                const isMaxCount = item.count >= item.availableStock;
+                return (
+                  <li
+                    key={item.idBasket}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      marginBottom: "1rem",
+                      backgroundColor: "#fff",
+                      padding: "1rem",
+                      borderRadius: "8px",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <div style={{ display: "flex", gap: "1rem", flex: 1, alignItems: "center" }}>
+                      <img
+                        src={item.image || "/placeholder.jpg"}
+                        alt={item.name}
+                        style={{
+                          width: "80px",
+                          height: "80px",
+                          objectFit: "cover",
+                          borderRadius: "8px",
+                          border: "1px solid #eee",
+                        }}
+                      />
+                      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                        <strong style={{ fontSize: "1.1rem" }}>{item.name}</strong>
+                        <div style={{ marginTop: "0.5rem", display: "flex", alignItems: "center" }}>
+                          <button
+                            onClick={() => updateCount(item.idProducts, item.count - 1)}
+                            style={buttonStyle}
+                          >
+                            −
+                          </button>
+                          <span>{item.count}</span>
+                          <button
+                            onClick={() => updateCount(item.idProducts, item.count + 1)}
+                            style={{
+                              ...buttonStyle,
+                              opacity: isMaxCount ? 0.5 : 1,
+                              cursor: isMaxCount ? "not-allowed" : "pointer",
+                            }}
+                            disabled={isMaxCount}
+                          >
+                            +
+                          </button>
+                        </div>
+                        {isMaxCount && (
+                          <div style={{ color: "red", fontSize: "0.9rem" }}>
+                            Больше нет в наличии ({item.availableStock} шт.)
+                          </div>
+                        )}
+                        <div style={{ marginTop: "0.5rem", color: "#555" }}>
+                          {item.cost}₽ × {item.count} ={" "}
+                          <strong>{item.cost * item.count}₽</strong>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <button onClick={() => handleDelete(item.idProducts)} style={deleteStyle}>
-                    ✕
-                  </button>
-                </li>
-              ))}
+                    <button onClick={() => handleDelete(item.idProducts)} style={deleteStyle}>
+                      ✕
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
 
             <h3 style={{ marginTop: "2rem", color: "#111" }}>Итого: {total}₽</h3>

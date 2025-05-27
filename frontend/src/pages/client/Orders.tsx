@@ -47,6 +47,52 @@ const Orders = () => {
 
     fetchOrders();
   }, []);
+  const token = localStorage.getItem("token");
+
+const repeatOrder = async (orderId: number) => {
+  try {
+    const res = await fetch(`http://localhost:4000/orders/${orderId}/repeat`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("🛒 Товары из заказа добавлены в корзину");
+    } else {
+      alert(data.message || "Ошибка при повторении заказа");
+    }
+  } catch (err) {
+    console.error("Ошибка повторения заказа:", err);
+  }
+};
+
+const cancelOrder = async (orderId: number) => {
+  try {
+    const res = await fetch(`http://localhost:4000/orders/${orderId}/cancel`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("🚫 Заказ отменён");
+      // Обновляем список заказов
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, status: "Отменён" } : order
+        )
+      );
+    } else {
+      alert(data.message || "Ошибка при отмене заказа");
+    }
+  } catch (err) {
+    console.error("Ошибка отмены заказа:", err);
+  }
+};
+
 
   return (
     <>
@@ -96,6 +142,37 @@ const Orders = () => {
                   ))}
                   <p><strong>Итоговая сумма:</strong> {order.total.toFixed(2)} ₽</p>
                 </div>
+                <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
+                <button
+                  onClick={() => repeatOrder(order.id)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    backgroundColor: "#198754",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  🔁 Повторить заказ
+                </button>
+                {order.status !== "Отменён" && (
+                  <button
+                    onClick={() => cancelOrder(order.id)}
+                    style={{
+                      padding: "0.5rem 1rem",
+                      backgroundColor: "#dc3545",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    ❌ Отменить заказ
+                  </button>
+                )}
+              </div>
+
               </li>
             ))}
           </ul>

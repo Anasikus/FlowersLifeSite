@@ -17,11 +17,28 @@ const getCart = async (req, res) => {
         p.idProducts,
         p.nameProducts AS name,
         p.photo AS image,
-        p.cost
+        p.cost,
+        p.count AS availableStock
       FROM basket b
       JOIN products p ON b.idProducts = p.idProducts
       WHERE b.idClients = ?
     `, [clientId]);
+
+    // Автоматически уменьшаем count до max availableStock, если превышает
+    const updates = [];
+    for (const item of items) {
+      if (item.count > item.availableStock) {
+        item.count = item.availableStock;
+        updates.push(db.query(
+          'UPDATE basket SET count = ? WHERE idBasket = ?',
+          [item.availableStock, item.idBasket]
+        ));
+      }
+    }
+
+    if (updates.length > 0) {
+      await Promise.all(updates);
+    }
 
     res.json(items);
   } catch (err) {
@@ -30,12 +47,20 @@ const getCart = async (req, res) => {
   }
 };
 
+
 const addToCart = async (req, res) => {
   try {
     const clientId = await getClientIdByUserId(req.user.id);
     const { productId, count } = req.body;
 
-    if (!clientId || !productId || !count) return res.status(400).json({ message: 'Данные некорректны' });
+    if (!clientId || !productId || !count) {
+      return res.status(400).json({ message: 'Данные некорректны' });
+    }
+
+    const [[product]] = await db.query('SELECT count FROM products WHERE idProducts = ?', [productId]);
+    if (!product || count > product.count) {
+      return res.status(400).json({ message: `Недостаточно товара на складе (в наличии: ${product?.count || 0})` });
+    }
 
     const [existing] = await db.query(
       'SELECT * FROM basket WHERE idClients = ? AND idProducts = ?',
@@ -43,9 +68,14 @@ const addToCart = async (req, res) => {
     );
 
     if (existing.length > 0) {
+      const newCount = existing[0].count + count;
+      if (newCount > product.count) {
+        return res.status(400).json({ message: `Всего на складе: ${product.count}, в корзине уже: ${existing[0].count}` });
+      }
+
       await db.query(
-        'UPDATE basket SET count = count + ? WHERE idClients = ? AND idProducts = ?',
-        [count, clientId, productId]
+        'UPDATE basket SET count = ? WHERE idClients = ? AND idProducts = ?',
+        [newCount, clientId, productId]
       );
     } else {
       await db.query(
@@ -61,13 +91,21 @@ const addToCart = async (req, res) => {
   }
 };
 
+
 const updateQuantity = async (req, res) => {
   try {
     const clientId = await getClientIdByUserId(req.user.id);
     const productId = req.params.productId;
     const { count } = req.body;
 
-    if (!clientId || !productId || count == null) return res.status(400).json({ message: 'Некорректные данные' });
+    if (!clientId || !productId || count == null) {
+      return res.status(400).json({ message: 'Некорректные данные' });
+    }
+
+    const [[product]] = await db.query('SELECT count FROM products WHERE idProducts = ?', [productId]);
+    if (!product || count > product.count) {
+      return res.status(400).json({ message: `Недостаточно товара на складе (в наличии: ${product?.count || 0})` });
+    }
 
     await db.query(
       'UPDATE basket SET count = ? WHERE idClients = ? AND idProducts = ?',
@@ -80,6 +118,7 @@ const updateQuantity = async (req, res) => {
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
+
 
 const removeFromCart = async (req, res) => {
   try {

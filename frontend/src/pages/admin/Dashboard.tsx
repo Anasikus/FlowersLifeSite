@@ -1,5 +1,14 @@
+import AdminHeader from "../../components/AdminHeader";
+
 const AdminPanel = () => {
-  return <h1>Панель администратора</h1>;
+  return (
+    <>
+      <AdminHeader />    
+      <h1>Панель администратора</h1>;
+    </>
+
+  ) 
+  
 };
 
 export default AdminPanel;
