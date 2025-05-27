@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import AdminHeader from "../../components/AdminHeader";
 
 type Category = {
-  idCategory: number;
-  nameCategory: string;
+  codeCategory: number;
+  title: string;
 };
 
 const CategoriesPage = () => {
@@ -12,6 +13,7 @@ const CategoriesPage = () => {
   const [search, setSearch] = useState("");
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [addCategoryName, setAddCategoryName] = useState("");
 
   const { token } = useAuth();
 
@@ -21,7 +23,7 @@ const CategoriesPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("/admin/categories", {
+      const res = await axios.get("/api/admin/categories", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCategories(res.data);
@@ -44,7 +46,7 @@ const CategoriesPage = () => {
 
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
-    setNewCategoryName(category.nameCategory);
+    setNewCategoryName(category.title);
   };
 
   const handleUpdate = async () => {
@@ -52,7 +54,7 @@ const CategoriesPage = () => {
 
     try {
       await axios.put(
-        `/api/admin/categories/${editingCategory.idCategory}`,
+        `/api/admin/categories/${editingCategory.codeCategory}`,
         { nameCategory: newCategoryName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -64,22 +66,47 @@ const CategoriesPage = () => {
     }
   };
 
-  const filteredCategories = Array.isArray(categories)
-  ? categories.filter(cat => cat.nameCategory.toLowerCase().includes(search.toLowerCase()))
-  : [];
+  const handleAddCategory = async () => {
+    if (!addCategoryName.trim()) return;
 
+    try {
+      await axios.post(
+        "/api/admin/categories",
+        { nameCategory: addCategoryName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setAddCategoryName("");
+      fetchCategories();
+    } catch (err) {
+      console.error("Ошибка добавления категории", err);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearch("");
+  };
+
+  const filteredCategories = Array.isArray(categories)
+    ? categories.filter((cat) =>
+        cat.title.toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
 
   return (
     <div>
+      <AdminHeader />
       <h1>Категории товаров</h1>
 
-      <input
-        type="text"
-        placeholder="Поиск категории..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: "10px", padding: "5px" }}
-      />
+      <div style={{ marginBottom: "10px" }}>
+        <input
+          type="text"
+          placeholder="Поиск категории..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ padding: "5px", marginRight: "10px" }}
+        />
+        <button onClick={handleClearSearch}>Очистить поиск</button>
+      </div>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
@@ -92,16 +119,22 @@ const CategoriesPage = () => {
         </thead>
         <tbody>
           {filteredCategories.map((cat) => (
-            <tr key={cat.idCategory}>
-              <td>{cat.nameCategory}</td>
+            <tr key={cat.codeCategory}>
+              <td>{cat.title}</td>
               <td>
                 <button onClick={() => handleEdit(cat)}>Редактировать</button>
               </td>
               <td>
-                <button onClick={() => handleDelete(cat.idCategory)}>Удалить</button>
+                <button onClick={() => handleDelete(cat.codeCategory)}>
+                  Удалить
+                </button>
               </td>
               <td>
-                <button onClick={() => alert(`Перейти к товарам категории #${cat.idCategory}`)}>
+                <button
+                  onClick={() =>
+                    alert(`Перейти к товарам категории #${cat.codeCategory}`)
+                  }
+                >
                   Товары
                 </button>
               </td>
@@ -110,8 +143,21 @@ const CategoriesPage = () => {
         </tbody>
       </table>
 
+      {/* Добавление категории */}
+      <div style={{ marginTop: "30px" }}>
+        <h3>Добавить новую категорию</h3>
+        <input
+          type="text"
+          placeholder="Название категории"
+          value={addCategoryName}
+          onChange={(e) => setAddCategoryName(e.target.value)}
+        />
+        <button onClick={handleAddCategory}>Добавить</button>
+      </div>
+
+      {/* Редактирование категории */}
       {editingCategory && (
-        <div style={{ marginTop: "20px" }}>
+        <div style={{ marginTop: "30px" }}>
           <h3>Редактировать категорию</h3>
           <input
             type="text"

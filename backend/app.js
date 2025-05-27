@@ -31,12 +31,13 @@ app.use('/admin/orders', adminOrdersRoutes);
 const adminProductsRoutes = require('./routes/admin/products');
 app.use('/admin/products', adminProductsRoutes);
 const adminCategoriesRoutes = require('./routes/admin/categories');
-app.use('/admin/categories', adminCategoriesRoutes);
+app.use('/api/admin/categories', adminCategoriesRoutes);
 const adminUsersRoutes = require('./routes/admin/users');
 app.use('/admin/users', adminUsersRoutes);
 const adminStatsRoutes = require('./routes/admin/stats');
 app.use('/admin/stats', adminStatsRoutes);
 app.use('/users', userRoutes);
+app.use("/api/admin", require("./routes/admin/address"));
 
 // Тестовый маршрут
 app.get('/', (req, res) => res.send('API работает'));

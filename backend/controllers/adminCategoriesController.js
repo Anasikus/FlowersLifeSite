@@ -30,7 +30,7 @@ const updateCategory = async (req, res) => {
   const { nameCategory } = req.body;
 
   try {
-    await db.query('UPDATE categories SET title = ? WHERE idCategory = ?', [nameCategory, id]);
+    await db.query('UPDATE categories SET title = ? WHERE codeCategory = ?', [nameCategory, id]);
     res.json({ message: 'Категория обновлена' });
   } catch (err) {
     console.error('Ошибка обновления категории:', err);
@@ -42,7 +42,7 @@ const deleteCategory = async (req, res) => {
   const id = req.params.id;
 
   try {
-    await db.query('DELETE FROM categories WHERE idCategory = ?', [id]);
+    await db.query('DELETE FROM categories WHERE codeCategory = ?', [id]);
     res.json({ message: 'Категория удалена' });
   } catch (err) {
     console.error('Ошибка удаления категории:', err);

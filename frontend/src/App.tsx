@@ -12,7 +12,8 @@ import Profile from "./pages/client/Profile";
 import Orders from "./pages/client/Orders";
 import AdminOrders from "./pages/admin/AdminOrders";
 import CategoriesPage from './pages/admin/CategoriesPage';
-
+import UsersPage from "./pages/admin/UsersPage";
+import AdminAddressesPage from "./pages/admin/AdminAddressesPage";
 
 // Компонент автоматической переадресации
 const RoleRedirect = () => {
@@ -48,6 +49,8 @@ const App = () => {
         <Route path="/orders" element={<Orders />} />
         <Route path="/admin/orders" element={<AdminOrders />} />
         <Route path="/admin/categories" element={<CategoriesPage />} />
+        <Route path="/admin/users" element = {<UsersPage/>} />
+        <Route path="/admin/addresses" element={<AdminAddressesPage />} />
       </Routes>
     </Router>
   );
