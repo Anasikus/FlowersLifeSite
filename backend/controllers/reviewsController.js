@@ -36,10 +36,15 @@ const addReview = async (req, res) => {
     );
 
     if (existing.length > 0) {
-      return res.status(409).json({ message: 'Отзыв уже оставлен для этого товара' });
+      // Обновляем отзыв
+      await db.query(
+        `UPDATE reviews SET rating = ?, text = ? WHERE idClients = ? AND idProduct = ?`,
+        [rating, text || null, clientId, idProduct]
+      );
+      return res.status(200).json({ message: 'Отзыв обновлён' });
     }
 
-    // Добавление отзыва
+    // Добавление нового отзыва
     await db.query(
       'INSERT INTO reviews (idClients, idProduct, rating, text) VALUES (?, ?, ?, ?)',
       [clientId, idProduct, rating, text || null]
@@ -51,7 +56,6 @@ const addReview = async (req, res) => {
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
-
 
 const getReviewsForProduct = async (req, res) => {
   const productId = req.params.productId;
@@ -75,4 +79,3 @@ module.exports = {
   addReview,
   getReviewsForProduct
 };
-

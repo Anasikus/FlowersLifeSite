@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import InputPhoneMask, { getCleanPhone } from "../../components/InputPhoneMask";
 import styles from "./AuthForm.module.css";
+import Header from "../../components/Header";
 
 const Register = () => {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -46,24 +47,28 @@ const Register = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.container}>
-      <h2>Регистрация</h2>
+    <>
+    <Header />
+      <form onSubmit={handleSubmit} className={styles.container}>
+        <h2>Регистрация</h2>
 
-      <InputPhoneMask
-        value={form.username}
-        onChange={(val) => setForm({ ...form, username: val })}
-      />
+        <InputPhoneMask
+          value={form.username}
+          onChange={(val) => setForm({ ...form, username: val })}
+        />
 
-      <input
-        type="password"
-        placeholder="Пароль"
-        value={form.password}
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-        required
-      />
+        <input
+          type="password"
+          placeholder="Пароль"
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          required
+        />
 
-      <button type="submit">Зарегистрироваться</button>
+        <button type="submit">Зарегистрироваться</button>
     </form>
+    </>
+
   );
 };
 

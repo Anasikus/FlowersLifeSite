@@ -94,8 +94,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
       }}
     >
       <img
-        src={product.photo || "/placeholder.jpg"}
-        alt={product.nameProducts}
+        src={product.photo ? `http://localhost:4000/${product.photo}` : "/placeholder.png"}
         style={{
           width: "100%",
           height: "200px",

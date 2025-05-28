@@ -1,14 +1,19 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path'); // ← добавлено
 require('dotenv').config();
 
 const db = require('./config/db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/userRoutes');
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Статические файлы (для изображений и др.)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Подключение маршрутов
 app.use('/auth', authRoutes);
@@ -26,18 +31,21 @@ const ordersRoutes = require('./routes/orders');
 app.use('/orders', ordersRoutes);
 const reviewsRoutes = require('./routes/reviews');
 app.use('/reviews', reviewsRoutes);
+
 const adminOrdersRoutes = require('./routes/admin/orders');
 app.use('/admin/orders', adminOrdersRoutes);
 const adminProductsRoutes = require('./routes/admin/products');
 app.use('/admin/products', adminProductsRoutes);
 const adminCategoriesRoutes = require('./routes/admin/categories');
-app.use('/api/admin/categories', adminCategoriesRoutes);
+app.use('/admin/categories', adminCategoriesRoutes);
 const adminUsersRoutes = require('./routes/admin/users');
 app.use('/admin/users', adminUsersRoutes);
 const adminStatsRoutes = require('./routes/admin/stats');
 app.use('/admin/stats', adminStatsRoutes);
+const adminAddressRoutes = require('./routes/admin/address');
+app.use('/api/admin', adminAddressRoutes);
+
 app.use('/users', userRoutes);
-app.use("/api/admin", require("./routes/admin/address"));
 
 // Тестовый маршрут
 app.get('/', (req, res) => res.send('API работает'));

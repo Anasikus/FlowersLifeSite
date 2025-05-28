@@ -30,6 +30,7 @@ const statuses = [
 const AdminOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const token = localStorage.getItem('token');
 
   useEffect(() => {
@@ -54,6 +55,11 @@ const AdminOrders = () => {
 
     fetchOrders();
   }, [token]);
+
+  const filteredOrders = orders.filter(order =>
+    order.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    order.id.toString().includes(searchTerm)
+  );
 
   const updateStatus = async (orderId: number, newStatus: string) => {
     try {
@@ -83,16 +89,23 @@ const AdminOrders = () => {
   };
 
   if (loading) return <p>Загрузка заказов...</p>;
-
   if (orders.length === 0) return <p>Заказы отсутствуют.</p>;
 
   return (
     <>
-    <AdminHeader /> 
+      <AdminHeader />
       <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto' }}>
         <h2>📋 Заказы (Админская панель)</h2>
+        <input
+          type="text"
+          placeholder="Поиск по пользователю или номеру заказа..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ margin: "1rem 0", padding: "0.5rem", width: "100%" }}
+        />
+
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {orders.map(order => (
+          {filteredOrders.map(order => (
             <li key={order.id} style={{ border: '1px solid #ccc', borderRadius: '8px', marginBottom: '1.5rem', padding: '1rem' }}>
               <h3>Заказ №{order.id}</h3>
               <p><strong>Пользователь:</strong> {order.clientName}</p>
@@ -113,8 +126,7 @@ const AdminOrders = () => {
                 {order.products.map(product => (
                   <li key={product.idProducts} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
                     <img
-                      src={`/${product.photo}`}
-                      alt={product.nameProducts}
+                      src={product.photo ? `http://localhost:4000/${product.photo}` : "/placeholder.png"}
                       style={{ width: '80px', height: '80px', objectFit: 'cover', marginRight: '1rem' }}
                     />
                     <div>

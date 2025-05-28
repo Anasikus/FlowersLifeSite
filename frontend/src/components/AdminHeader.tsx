@@ -33,7 +33,26 @@ const AdminHeader = () => {
         >
           Заказы
         </NavLink>
-
+        <NavLink
+          to="/admin/products"
+          style={({ isActive }) => ({
+            color: isActive ? "#0d6efd" : "#fff",
+            textDecoration: "none",
+            fontWeight: "bold"
+          })}
+        >
+          Товары
+        </NavLink>
+        <NavLink
+          to="/admin/categories"
+          style={({ isActive }) => ({
+            color: isActive ? "#0d6efd" : "#fff",
+            textDecoration: "none",
+            fontWeight: "bold"
+          })}
+        >
+          Категории
+        </NavLink>
         {role === "admin" && (
           <>
             <NavLink
@@ -60,18 +79,7 @@ const AdminHeader = () => {
         )}
 
         <NavLink
-          to="/admin/categories"
-          style={({ isActive }) => ({
-            color: isActive ? "#0d6efd" : "#fff",
-            textDecoration: "none",
-            fontWeight: "bold"
-          })}
-        >
-          Категории
-        </NavLink>
-
-        <NavLink
-          to="/admin/analytics"
+          to="/admin/stats"
           style={({ isActive }) => ({
             color: isActive ? "#0d6efd" : "#fff",
             textDecoration: "none",

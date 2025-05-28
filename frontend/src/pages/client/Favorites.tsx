@@ -120,7 +120,7 @@ const Favorites = () => {
                 >
                   <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                     <img
-                      src={`/${item.photo}` || "/placeholder.jpg"}
+                      src={item.photo ? `http://localhost:4000/${item.photo}` : "/placeholder.png"}
                       alt={item.nameProducts}
                       style={{
                         width: "80px",

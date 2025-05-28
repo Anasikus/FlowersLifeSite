@@ -14,6 +14,8 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import CategoriesPage from './pages/admin/CategoriesPage';
 import UsersPage from "./pages/admin/UsersPage";
 import AdminAddressesPage from "./pages/admin/AdminAddressesPage";
+import AdminStats from "./pages/admin/AdminStats";
+import AdminProductsPage from "./pages/admin/AdminProductsPage";
 
 // Компонент автоматической переадресации
 const RoleRedirect = () => {
@@ -22,7 +24,7 @@ const RoleRedirect = () => {
 
   useEffect(() => {
     if (role === "admin" || role === "employee") {
-      navigate("/admin");
+      navigate("/admin/stats");
     } else if (role === "user") {
       navigate("/catalog");
     } else {
@@ -51,6 +53,8 @@ const App = () => {
         <Route path="/admin/categories" element={<CategoriesPage />} />
         <Route path="/admin/users" element = {<UsersPage/>} />
         <Route path="/admin/addresses" element={<AdminAddressesPage />} />
+        <Route path="/admin/stats" element={<AdminStats />} />
+        <Route path="/admin/products" element={<AdminProductsPage/>} />
       </Routes>
     </Router>
   );

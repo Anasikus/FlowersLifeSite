@@ -1,3 +1,4 @@
+// AdminAddressesPage.tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
@@ -11,13 +12,23 @@ type Address = {
 const AdminAddressesPage = () => {
   const { token } = useAuth();
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [filtered, setFiltered] = useState<Address[]>([]);
   const [newAddress, setNewAddress] = useState("");
   const [editing, setEditing] = useState<Address | null>(null);
   const [editedName, setEditedName] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchAddresses();
   }, []);
+
+  useEffect(() => {
+    setFiltered(
+      addresses.filter((addr) =>
+        addr.name.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [search, addresses]);
 
   const fetchAddresses = async () => {
     try {
@@ -33,9 +44,11 @@ const AdminAddressesPage = () => {
   const handleAdd = async () => {
     if (!newAddress.trim()) return;
     try {
-      await axios.post("/api/admin/addresses", { name: newAddress }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "/api/admin/addresses",
+        { name: newAddress },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setNewAddress("");
       fetchAddresses();
     } catch (err) {
@@ -63,9 +76,11 @@ const AdminAddressesPage = () => {
   const handleUpdate = async () => {
     if (!editing) return;
     try {
-      await axios.put(`/api/admin/addresses/${editing.idAddress}`, { name: editedName }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `/api/admin/addresses/${editing.idAddress}`,
+        { name: editedName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setEditing(null);
       setEditedName("");
       fetchAddresses();
@@ -78,6 +93,14 @@ const AdminAddressesPage = () => {
     <div>
       <AdminHeader />
       <h2>Адреса магазинов</h2>
+
+      <input
+        type="text"
+        placeholder="Поиск адреса..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ marginBottom: "1rem" }}
+      />
 
       <div>
         <input
@@ -97,7 +120,7 @@ const AdminAddressesPage = () => {
           </tr>
         </thead>
         <tbody>
-          {addresses.map(addr => (
+          {filtered.map((addr) => (
             <tr key={addr.idAddress}>
               <td>{addr.name}</td>
               <td>

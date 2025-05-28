@@ -1,60 +1,108 @@
 const db = require('../config/db');
+const path = require('path');
+const fs = require('fs');
 
 const getAllProducts = async (req, res) => {
   try {
-    const [products] = await db.query('SELECT * FROM products');
+    const { category, search } = req.query;
+    let query = 'SELECT * FROM products';
+    const params = [];
+
+    if (category) {
+      query += ' WHERE codeCategory = ?';
+      params.push(category);
+    }
+
+    if (search) {
+      query += category ? ' AND' : ' WHERE';
+      query += ' nameProducts LIKE ?';
+      params.push(`%${search}%`);
+    }
+
+    const [products] = await db.query(query, params);
     res.json(products);
   } catch (err) {
-    console.error('Ошибка получения товаров:', err);
+    console.error('Ошибка при получении товаров:', err);
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
 
 const createProduct = async (req, res) => {
-  const { nameProducts, cost, photo, codeCategory, count } = req.body;
-
-  if (!nameProducts || !cost || !codeCategory) {
-    return res.status(400).json({ message: 'Не все поля заполнены' });
-  }
-
   try {
-    await db.query(
-      'INSERT INTO products (nameProducts, cost, photo, codeCategory, count) VALUES (?, ?, ?, ?, ?)',
+    const { nameProducts, cost, codeCategory, count } = req.body;
+    const photo = req.file ? 'img/' + req.file.filename : null;
+
+    if (!nameProducts || !cost || !codeCategory) {
+      return res.status(400).json({ message: 'Не все обязательные поля заполнены' });
+    }
+
+    const [result] = await db.query(
+      `INSERT INTO products (nameProducts, cost, photo, codeCategory, count)
+       VALUES (?, ?, ?, ?, ?)`,
       [nameProducts, cost, photo, codeCategory, count || 0]
     );
-    res.status(201).json({ message: 'Товар добавлен' });
+
+    res.status(201).json({ message: 'Товар добавлен', id: result.insertId });
   } catch (err) {
-    console.error('Ошибка добавления товара:', err);
+    console.error('Ошибка при добавлении товара:', err);
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
 
 const updateProduct = async (req, res) => {
-  const id = req.params.id;
-  const { nameProducts, cost, photo, codeCategory, count } = req.body;
-
   try {
-    await db.query(
-      `UPDATE products
-       SET nameProducts = ?, cost = ?, photo = ?, codeCategory = ?, count = ?
-       WHERE idProducts = ?`,
-      [nameProducts, cost, photo, codeCategory, count, id]
-    );
+    const { id } = req.params;
+    const { nameProducts, cost, codeCategory, count } = req.body;
+
+    const [[existingProduct]] = await db.query('SELECT photo FROM products WHERE idProducts = ?', [id]);
+
+    let updateQuery = `
+      UPDATE products
+      SET nameProducts = ?, cost = ?, codeCategory = ?, count = ?
+    `;
+    const params = [nameProducts, cost, codeCategory, count || 0];
+
+    if (req.file) {
+      const newPhoto = 'img/' + req.file.filename;
+
+      if (existingProduct && existingProduct.photo) {
+        const oldPath = path.join(__dirname, '..', 'public', existingProduct.photo);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
+      updateQuery += ', photo = ?';
+      params.push(newPhoto);
+    }
+
+    updateQuery += ' WHERE idProducts = ?';
+    params.push(id);
+
+    await db.query(updateQuery, params);
     res.json({ message: 'Товар обновлён' });
   } catch (err) {
-    console.error('Ошибка обновления товара:', err);
+    console.error('Ошибка при обновлении товара:', err);
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
 
 const deleteProduct = async (req, res) => {
-  const id = req.params.id;
-
   try {
+    const { id } = req.params;
+
+    const [[product]] = await db.query('SELECT photo FROM products WHERE idProducts = ?', [id]);
+    if (product && product.photo) {
+      const filePath = path.join(__dirname, '..', 'public', product.photo);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
     await db.query('DELETE FROM products WHERE idProducts = ?', [id]);
     res.json({ message: 'Товар удалён' });
   } catch (err) {
-    console.error('Ошибка удаления товара:', err);
+    console.error('Ошибка при удалении товара:', err);
     res.status(500).json({ message: 'Ошибка сервера' });
   }
 };

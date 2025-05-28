@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import InputPhoneMask, { getCleanPhone } from "../../components/InputPhoneMask";
 import styles from "./AuthForm.module.css";
+import Header from "../../components/Header";
 
 const Login = () => {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -35,7 +36,10 @@ const Login = () => {
   };
 
   return (
+    <>    
+    <Header />
     <form onSubmit={handleSubmit} className={styles.container}>
+      
       <h2>Вход</h2>
 
       <InputPhoneMask
@@ -57,6 +61,8 @@ const Login = () => {
         Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
       </p>
     </form>
+    </>
+
   );
 };
 

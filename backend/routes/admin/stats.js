@@ -5,6 +5,6 @@ const {
 } = require('../../controllers/adminStatsController');
 const { authenticateToken, requireRole } = require('../../middleware/authMiddleware');
 
-router.get('/', authenticateToken, requireRole(['admin']), getAdminStats);
+router.get('/', authenticateToken, requireRole(['admin', 'employee']), getAdminStats);
 
 module.exports = router;

@@ -149,7 +149,7 @@ const Cart = () => {
                   >
                     <div style={{ display: "flex", gap: "1rem", flex: 1, alignItems: "center" }}>
                       <img
-                        src={item.image || "/placeholder.jpg"}
+                        src={item.image ? `http://localhost:4000/${item.image}` : "/placeholder.png"}
                         alt={item.name}
                         style={{
                           width: "80px",
