@@ -26,13 +26,29 @@ const getAdminStats = async (req, res) => {
       GROUP BY o.dateCreate
       ORDER BY o.dateCreate ASC
     `, [start, end]);
+    
+    const [[{ totalReviews, averageRating }]] = await db.query(`
+      SELECT COUNT(*) AS totalReviews, AVG(rating) AS averageRating
+      FROM reviews
+    `);
 
-    res.json({
-      totalOrders,
-      totalClients,
-      totalSum: parseFloat(totalSum).toFixed(2),
-      dailyStats
-    });
+      const [allReviews] = await db.query(`
+        SELECT r.id, r.rating, r.text, r.created_at, c.surname, c.name
+        FROM reviews r
+        JOIN clients c ON r.idClients = c.idClients
+        ORDER BY r.created_at DESC
+      `);
+
+      res.json({
+        totalOrders,
+        totalClients,
+        totalSum: parseFloat(totalSum).toFixed(2),
+        dailyStats,
+        totalReviews,
+        averageRating: averageRating ? parseFloat(averageRating).toFixed(2) : "0.00",
+        allReviews
+      });
+
   } catch (err) {
     console.error('Ошибка аналитики:', err);
     res.status(500).json({ message: 'Ошибка сервера' });

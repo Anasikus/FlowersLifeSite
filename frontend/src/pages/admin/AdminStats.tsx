@@ -14,15 +14,33 @@ interface AdminStatsResponse {
   totalClients: number;
   totalSum: string;
   dailyStats: DailyStat[];
+  totalReviews: number;
+  averageRating: string;
+  allReviews: Review[];
 }
+
+
+interface Review {
+  id: number;
+  rating: number;
+  text: string;
+  created_at: string;
+  surname: string;
+  name: string;
+}
+
 
 const AdminStats = () => {
   const [stats, setStats] = useState<AdminStatsResponse>({
     totalOrders: 0,
     totalClients: 0,
     totalSum: '0.00',
-    dailyStats: []
+    dailyStats: [],
+    totalReviews: 0,
+    averageRating: "",
+    allReviews: []
   });
+
 
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState(() =>
@@ -120,6 +138,14 @@ const AdminStats = () => {
           <h3 className="text-lg font-semibold">Общая сумма</h3>
           <p className="text-2xl">{stats.totalSum} ₽</p>
         </div>
+        <div className="bg-white p-4 rounded shadow">
+          <h3 className="text-lg font-semibold">Отзывы</h3>
+          <p className="text-2xl">{stats.totalReviews}</p>
+        </div>
+        <div className="bg-white p-4 rounded shadow">
+          <h3 className="text-lg font-semibold">Средняя оценка</h3>
+          <p className="text-2xl">{stats.averageRating} ★</p>
+        </div>
       </div>
 
       {/* График */}
@@ -129,7 +155,32 @@ const AdminStats = () => {
         <h3 className="text-lg font-semibold mb-2">График заказов</h3>
         <Line data={chartData} />
       </div>
+      <div className="bg-white p-4 rounded shadow mt-6">
+      <h3 className="text-lg font-semibold mb-2">Отзывы клиентов</h3>
+      {stats.allReviews.length === 0 ? (
+        <p>Отзывов пока нет.</p>
+      ) : (
+        <ul className="space-y-4">
+          {stats.allReviews.map((review) => (
+            <li key={review.id} className="border-b pb-2">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold">
+                  {review.surname} {review.name}
+                </span>
+                <span className="text-yellow-500 text-lg">★ {review.rating}</span>
+              </div>
+              <p className="text-gray-700">{review.text}</p>
+              <p className="text-sm text-gray-500">
+                {new Date(review.created_at).toLocaleDateString()}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
+
+  </div>
+    
   );
 };
 

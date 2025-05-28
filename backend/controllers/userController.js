@@ -2,14 +2,16 @@ const db = require('../config/db');
 
 // Получение профиля пользователя
 const getUserProfile = async (req, res) => {
-  const userId = req.user.id; // id из middleware auth
+  const userId = req.user.id;
 
   try {
     const [users] = await db.query(
       `SELECT 
          u.id, u.username,
-         c.photo, c.surname, c.name, c.patronymic, 
-         c.dateOfBirth, c.mail, a.name AS address
+         c.surname, c.name, c.patronymic, 
+         DATE_FORMAT(c.dateOfBirth, '%Y-%m-%d') AS dateOfBirth, 
+         c.mail, c.idAddress,
+         a.name AS address
        FROM users u
        JOIN clients c ON u.id = c.idUsers
        LEFT JOIN address a ON c.idAddress = a.idAddress
@@ -21,7 +23,11 @@ const getUserProfile = async (req, res) => {
       return res.status(404).json({ message: 'Пользователь не найден' });
     }
 
-    res.json(users[0]);
+    // Добавим URL для получения фото
+    const profile = users[0];
+    profile.photo = `/users/photo/${userId}`;
+
+    res.json(profile);
   } catch (error) {
     console.error('Ошибка получения профиля:', error);
     res.status(500).json({ message: 'Ошибка сервера' });
@@ -31,10 +37,11 @@ const getUserProfile = async (req, res) => {
 // Обновление профиля пользователя
 const updateUserProfile = async (req, res) => {
   const userId = req.user.id;
-  let { surname, name, patronymic, dateOfBirth, mail, photo, username, address } = req.body;
+  let { surname, name, patronymic, dateOfBirth, mail, username, address } = req.body;
+
+  const photoBuffer = req.file ? req.file.buffer : null;
 
   try {
-    // Преобразование даты в формат YYYY-MM-DD
     if (dateOfBirth) {
       const date = new Date(dateOfBirth);
       if (isNaN(date.getTime())) {
@@ -43,51 +50,55 @@ const updateUserProfile = async (req, res) => {
       dateOfBirth = date.toISOString().split('T')[0];
     }
 
-    // Обновление таблицы clients
+    // Обновление данных клиента
     await db.query(
       `UPDATE clients 
-       SET surname = ?, name = ?, patronymic = ?, dateOfBirth = ?, mail = ?, photo = ?
+       SET surname = ?, name = ?, patronymic = ?, dateOfBirth = ?, mail = ?, 
+           ${photoBuffer ? 'photo = ?,' : ''} idAddress = idAddress
        WHERE idUsers = ?`,
-      [surname, name, patronymic, dateOfBirth, mail, photo || null, userId]
+      photoBuffer 
+        ? [surname, name, patronymic, dateOfBirth, mail, photoBuffer, userId]
+        : [surname, name, patronymic, dateOfBirth, mail, userId]
     );
 
-    // Обновление таблицы users (телефон)
+    // Обновление username
     if (username) {
-      await db.query(
-        `UPDATE users SET username = ? WHERE id = ?`,
-        [username, userId]
-      );
+      await db.query(`UPDATE users SET username = ? WHERE id = ?`, [username, userId]);
     }
 
-    // Обновление адреса (если передан)
+    // Обновление адреса
     if (address) {
-      // Проверим, существует ли адрес
-      const [existing] = await db.query(`SELECT idAddress FROM address WHERE name = ?`, [address]);
-
-      let addressId;
-      if (existing.length > 0) {
-        addressId = existing[0].idAddress;
-      } else {
-        // Если адреса нет — создаём
-        const [insertResult] = await db.query(`INSERT INTO address (name) VALUES (?)`, [address]);
-        addressId = insertResult.insertId;
-      }
-
-      await db.query(
-        `UPDATE clients SET idAddress = ? WHERE idUsers = ?`,
-        [addressId, userId]
-      );
+      await db.query(`UPDATE clients SET idAddress = ? WHERE idUsers = ?`, [address, userId]);
     }
 
     res.status(200).json({ message: 'Профиль успешно обновлён' });
-
   } catch (error) {
     console.error('Ошибка обновления профиля:', error);
     res.status(500).json({ message: 'Ошибка обновления профиля', error });
   }
 };
 
+// Отдача изображения по ID
+const getUserPhoto = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const [rows] = await db.query(`SELECT photo FROM clients WHERE idUsers = ?`, [userId]);
+    if (rows.length === 0 || !rows[0].photo) {
+      return res.status(404).send('Фото не найдено');
+    }
+
+    const photo = rows[0].photo;
+    res.setHeader('Content-Type', 'image/jpeg'); // или image/png, если уверены
+    res.send(photo);
+  } catch (error) {
+    console.error('Ошибка получения фото:', error);
+    res.status(500).send('Ошибка сервера');
+  }
+};
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
+  getUserPhoto,
 };

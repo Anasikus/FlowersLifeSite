@@ -6,45 +6,56 @@ const jwt = require('jsonwebtoken');
 const cleanPhone = (value) => value.replace(/\D/g, '');
 
 const registerUser = async (req, res) => {
-  const { username, password, role = 'user' } = req.body;
+  const {
+    username,
+    password,
+    role = 'user',
+    surname,
+    name,
+    patronymic = null,
+    birthdate: dateOfBirth,
+    mail = null,
+  } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Заполните все поля' });
+  if (!username || !password || !surname || !name || !dateOfBirth) {
+    return res.status(400).json({ message: 'Заполните все обязательные поля' });
+  }
+
+  const birthDateObj = new Date(dateOfBirth);
+  const age = new Date().getFullYear() - birthDateObj.getFullYear();
+  if (age < 18 || age > 100) {
+    return res.status(400).json({ message: 'Возраст должен быть от 18 до 100 лет' });
   }
 
   try {
-    // Проверка на существующего пользователя (по чистому номеру)
     const cleanUsername = cleanPhone(username);
     const [existing] = await db.query(
-    'SELECT * FROM users WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(username, " ", ""), "(", ""), ")", ""), "-", ""), "+", ""), "_", "") = ?',
-    [cleanUsername]
-  );
+      'SELECT * FROM users WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(username, " ", ""), "(", ""), ")", ""), "-", ""), "+", ""), "_", "") = ?',
+      [cleanUsername]
+    );
 
-  if (existing.length > 0) {
+    if (existing.length > 0) {
       return res.status(400).json({ message: 'Пользователь уже существует' });
-  }
+    }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const [userResult] = await db.query(
+      'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+      [username, hashedPassword, role]
+    );
 
-  // Сохраняем номер в маске
-  const [userResult] = await db.query(
-    'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
-    [username, hashedPassword, role]
-  );
+    const userId = userResult.insertId;
 
-  const userId = userResult.insertId;
+    await db.query(
+      `INSERT INTO clients (surname, name, patronymic, dateOfBirth, mail, idUsers)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [surname, name, patronymic, dateOfBirth, mail, userId]
+    );
 
-  // Автоматическое создание клиента, сохраняем номер с маской
-  await db.query(
-    'INSERT INTO clients (name, mail, idUsers) VALUES (?, ?, ?)',
-    ['Имя клиента', username, userId]
-  );
-
-  res.status(201).json({ message: 'Пользователь зарегистрирован и клиент создан', userId });
-
+    res.status(201).json({ message: 'Пользователь зарегистрирован и клиент создан', userId });
   } catch (error) {
-  console.error('Ошибка регистрации:', error);
-  res.status(500).json({ message: 'Ошибка сервера' });
+    console.error('Ошибка регистрации:', error);
+    res.status(500).json({ message: 'Ошибка сервера' });
   }
 };
 

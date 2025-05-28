@@ -32,7 +32,7 @@ const AdminAddressesPage = () => {
 
   const fetchAddresses = async () => {
     try {
-      const res = await axios.get("/api/admin/addresses", {
+      const res = await axios.get("/admin/addresses", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAddresses(res.data);
@@ -45,7 +45,7 @@ const AdminAddressesPage = () => {
     if (!newAddress.trim()) return;
     try {
       await axios.post(
-        "/api/admin/addresses",
+        "/admin/addresses",
         { name: newAddress },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -59,7 +59,7 @@ const AdminAddressesPage = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm("Удалить адрес?")) return;
     try {
-      await axios.delete(`/api/admin/addresses/${id}`, {
+      await axios.delete(`/admin/addresses/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchAddresses();
@@ -77,7 +77,7 @@ const AdminAddressesPage = () => {
     if (!editing) return;
     try {
       await axios.put(
-        `/api/admin/addresses/${editing.idAddress}`,
+        `/admin/addresses/${editing.idAddress}`,
         { name: editedName },
         { headers: { Authorization: `Bearer ${token}` } }
       );

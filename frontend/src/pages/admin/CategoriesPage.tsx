@@ -23,7 +23,7 @@ const CategoriesPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("/api/admin/categories", {
+      const res = await axios.get("/admin/categories", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCategories(res.data);
@@ -35,7 +35,7 @@ const CategoriesPage = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm("Удалить категорию?")) return;
     try {
-      await axios.delete(`/api/admin/categories/${id}`, {
+      await axios.delete(`/admin/categories/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchCategories();
@@ -54,7 +54,7 @@ const CategoriesPage = () => {
 
     try {
       await axios.put(
-        `/api/admin/categories/${editingCategory.codeCategory}`,
+        `/admin/categories/${editingCategory.codeCategory}`,
         { nameCategory: newCategoryName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +71,7 @@ const CategoriesPage = () => {
 
     try {
       await axios.post(
-        "/api/admin/categories",
+        "/admin/categories",
         { nameCategory: addCategoryName },
         { headers: { Authorization: `Bearer ${token}` } }
       );

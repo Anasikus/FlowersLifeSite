@@ -43,7 +43,7 @@ app.use('/admin/users', adminUsersRoutes);
 const adminStatsRoutes = require('./routes/admin/stats');
 app.use('/admin/stats', adminStatsRoutes);
 const adminAddressRoutes = require('./routes/admin/address');
-app.use('/api/admin', adminAddressRoutes);
+app.use('/admin/addresses', adminAddressRoutes);
 
 app.use('/users', userRoutes);
 
