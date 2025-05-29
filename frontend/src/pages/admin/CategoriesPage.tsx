@@ -2,19 +2,113 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "../../components/AdminHeader";
+import "../../styles/CategoriesPage.module.css"
+import "../../index.css"
+
+// Типы
 
 type Category = {
   codeCategory: number;
   title: string;
 };
 
+type CategoryModalProps = {
+  isOpen: boolean;
+  initialName: string;
+  onSave: (name: string) => void;
+  onClose: () => void;
+  title: string;
+};
+
+// Модальное окно
+const CategoryModal = ({ isOpen, initialName, onSave, onClose, title }: CategoryModalProps) => {
+  const [name, setName] = useState(initialName);
+
+  useEffect(() => {
+    setName(initialName);
+  }, [initialName]);
+
+  if (!isOpen) return null;
+
+  const isDark = document.body.getAttribute("data-theme") === "dark";
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          padding: "2rem",
+          borderRadius: "10px",
+          maxWidth: "500px",
+          width: "100%",
+          boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 style={{ marginBottom: 10 }}>{title}</h3>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            marginBottom: "1rem",
+          }}
+          autoFocus
+        />
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+          <button
+            onClick={() => onSave(name)}
+            disabled={!name.trim()}
+            style={{
+              backgroundColor: "#0063eb",
+              color: "white",
+              border: "none",
+              padding: "10px 15px",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Сохранить
+          </button>
+          <button
+            onClick={onClose}
+            style={{
+              backgroundColor: "#888",
+              color: "white",
+              border: "none",
+              padding: "10px 15px",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Отмена
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CategoriesPage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [search, setSearch] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalInitialName, setModalInitialName] = useState("");
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [addCategoryName, setAddCategoryName] = useState("");
-
   const { token } = useAuth();
 
   useEffect(() => {
@@ -44,41 +138,41 @@ const CategoriesPage = () => {
     }
   };
 
-  const handleEdit = (category: Category) => {
+  const openAddModal = () => {
+    setEditingCategory(null);
+    setModalInitialName("");
+    setModalTitle("Добавить категорию");
+    setModalOpen(true);
+  };
+
+  const openEditModal = (category: Category) => {
     setEditingCategory(category);
-    setNewCategoryName(category.title);
+    setModalInitialName(category.title);
+    setModalTitle("Редактировать категорию");
+    setModalOpen(true);
   };
 
-  const handleUpdate = async () => {
-    if (!editingCategory) return;
-
+  const handleSave = async (name: string) => {
+    if (!name.trim()) return;
     try {
-      await axios.put(
-        `/admin/categories/${editingCategory.codeCategory}`,
-        { nameCategory: newCategoryName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (editingCategory) {
+        await axios.put(
+          `/admin/categories/${editingCategory.codeCategory}`,
+          { nameCategory: name },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.post(
+          "/admin/categories",
+          { nameCategory: name },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+      setModalOpen(false);
       setEditingCategory(null);
-      setNewCategoryName("");
       fetchCategories();
     } catch (err) {
-      console.error("Ошибка обновления категории", err);
-    }
-  };
-
-  const handleAddCategory = async () => {
-    if (!addCategoryName.trim()) return;
-
-    try {
-      await axios.post(
-        "/admin/categories",
-        { nameCategory: addCategoryName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setAddCategoryName("");
-      fetchCategories();
-    } catch (err) {
-      console.error("Ошибка добавления категории", err);
+      console.error("Ошибка сохранения категории", err);
     }
   };
 
@@ -86,88 +180,68 @@ const CategoriesPage = () => {
     setSearch("");
   };
 
-  const filteredCategories = Array.isArray(categories)
-    ? categories.filter((cat) =>
-        cat.title.toLowerCase().includes(search.toLowerCase())
-      )
-    : [];
+  const filteredCategories = categories.filter((cat) =>
+    cat.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const isDark = document.body.getAttribute("data-theme") === "dark";
 
   return (
-    <div>
+    <div style={{ padding: "20px", minHeight: "100vh" }}>
       <AdminHeader />
-      <h1>Категории товаров</h1>
+      <h1 style={{ marginBottom: "20px" }}>Категории товаров</h1>
 
-      <div style={{ marginBottom: "10px" }}>
+      <div style={{ marginBottom: "20px", display: "flex", gap: "10px" }}>
         <input
           type="text"
           placeholder="Поиск категории..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: "5px", marginRight: "10px" }}
+          style={{
+            flex: 1,
+            padding: "10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
         />
-        <button onClick={handleClearSearch}>Очистить поиск</button>
+        <button onClick={handleClearSearch} style={{ padding: "10px", backgroundColor: "#0063eb", color: "white", border: "none", borderRadius: "5px", width: "20%" }}>
+          Очистить поиск
+        </button>
+        <button onClick={openAddModal} style={{ padding: "10px", backgroundColor: "#0063eb", color: "white", border: "none", borderRadius: "5px", width: "20%" }}>
+          Добавить категорию
+        </button>
       </div>
 
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th>Название категории</th>
-            <th>Редактировать</th>
-            <th>Удалить</th>
-            <th>Товары категории</th>
+            <th style={{ padding: "10px", textAlign: "left" }}>Название категории</th>
+            <th style={{ padding: "10px" }}>Редактировать</th>
+            <th style={{ padding: "10px" }}>Удалить</th>
           </tr>
         </thead>
         <tbody>
           {filteredCategories.map((cat) => (
-            <tr key={cat.codeCategory}>
-              <td>{cat.title}</td>
-              <td>
-                <button onClick={() => handleEdit(cat)}>Редактировать</button>
+            <tr key={cat.codeCategory} style={{ borderBottom: "1px solid #ccc" }}>
+              <td style={{ padding: "10px" }}>{cat.title}</td>
+              <td style={{ padding: "10px" }}>
+                <button onClick={() => openEditModal(cat)} style={{ backgroundColor: "#0063eb", color: "white", border: "none", padding: "8px 12px", borderRadius: "5px" }}>Редактировать</button>
               </td>
-              <td>
-                <button onClick={() => handleDelete(cat.codeCategory)}>
-                  Удалить
-                </button>
-              </td>
-              <td>
-                <button
-                  onClick={() =>
-                    alert(`Перейти к товарам категории #${cat.codeCategory}`)
-                  }
-                >
-                  Товары
-                </button>
+              <td style={{ padding: "10px" }}>
+                <button onClick={() => handleDelete(cat.codeCategory)} style={{ backgroundColor: "#d9534f", color: "white", border: "none", padding: "8px 12px", borderRadius: "5px" }}>Удалить</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Добавление категории */}
-      <div style={{ marginTop: "30px" }}>
-        <h3>Добавить новую категорию</h3>
-        <input
-          type="text"
-          placeholder="Название категории"
-          value={addCategoryName}
-          onChange={(e) => setAddCategoryName(e.target.value)}
-        />
-        <button onClick={handleAddCategory}>Добавить</button>
-      </div>
-
-      {/* Редактирование категории */}
-      {editingCategory && (
-        <div style={{ marginTop: "30px" }}>
-          <h3>Редактировать категорию</h3>
-          <input
-            type="text"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-          />
-          <button onClick={handleUpdate}>Сохранить</button>
-          <button onClick={() => setEditingCategory(null)}>Отмена</button>
-        </div>
-      )}
+      <CategoryModal
+        isOpen={modalOpen}
+        initialName={modalInitialName}
+        onSave={handleSave}
+        onClose={() => setModalOpen(false)}
+        title={modalTitle}
+      />
     </div>
   );
 };

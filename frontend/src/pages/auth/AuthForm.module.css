@@ -59,3 +59,41 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+:global(body[data-theme="dark"]) .container {
+  background-color: #2b2b2b;
+  border-color: #444;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.05);
+}
+
+:global(body[data-theme="dark"]) h2 {
+  color: #ff69b4; /* ярко-розовый для заголовка */
+}
+
+:global(body[data-theme="dark"]) input {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border-color: #555;
+}
+
+:global(body[data-theme="dark"]) input:focus {
+  border-color: #66cc99;
+  box-shadow: 0 0 5px rgba(102, 204, 153, 0.6);
+}
+
+:global(body[data-theme="dark"]) button {
+  background-color: #66cc99;
+  color: black;
+}
+
+:global(body[data-theme="dark"]) button:hover {
+  background-color: #4bbf87;
+}
+
+:global(body[data-theme="dark"]) p {
+  color: #ccc;
+}
+
+:global(body[data-theme="dark"]) a {
+  color: #ff69b4;
+}

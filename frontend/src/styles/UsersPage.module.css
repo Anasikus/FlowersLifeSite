@@ -1,0 +1,125 @@
+.container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #000;
+}
+
+.title {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+.searchInput {
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tableHeaderRow {
+  background-color: #e0e0e0;
+}
+
+.tableRow {
+  border-bottom: 1px solid #ddd;
+}
+
+.th {
+  text-align: left;
+  padding: 12px;
+  font-weight: bold;
+  color: #333;
+  background-color: #e0e0e0;
+}
+
+.td {
+  padding: 12px;
+  color: #555;
+}
+
+.select {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.button {
+  padding: 6px 12px;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Кнопка разблокировки */
+.unblockButton {
+  background-color: #4caf50;
+}
+
+/* Кнопка блокировки */
+.blockButton {
+  background-color: #f44336;
+}
+
+/* Dark theme overrides */
+:global(body[data-theme='dark']) .container {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+:global(body[data-theme='dark']) .tableWrapper {
+  background-color: #1e1e1e;
+  box-shadow: none;
+}
+
+:global(body[data-theme='dark']) .tableHeaderRow {
+  background-color: #2c2c2c;
+}
+
+:global(body[data-theme='dark']) .th {
+  background-color: #2c2c2c;
+  color: #f0f0f0;
+}
+
+:global(body[data-theme='dark']) .td {
+  color: #ccc;
+}
+
+:global(body[data-theme='dark']) .select {
+  background-color: #333;
+  border: 1px solid #555;
+  color: #f0f0f0;
+}
+
+:global(body[data-theme='dark']) .button {
+  color: #fff;
+}
+
+:global(body[data-theme='dark']) .unblockButton {
+  background-color: #388e3c;
+}
+
+:global(body[data-theme='dark']) .blockButton {
+  background-color: #d32f2f;
+}

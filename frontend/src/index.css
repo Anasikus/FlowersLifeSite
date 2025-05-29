@@ -1,0 +1,54 @@
+/* Общие стили */
+html, body, #root {
+  height: 100%;
+  overflow: visible; /* должно быть по умолчанию */
+}
+
+body {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Светлая тема (по умолчанию) */
+body[data-theme="light"] {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Тёмная тема */
+body[data-theme="dark"] {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+/* Пример адаптации ссылок и кнопок */
+a, button {
+  color: inherit;
+}
+
+.modal-content {
+  background-color: white;
+  color: black;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Поддержка тёмной темы */
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background-color: #1e1e1e;
+    color: white;
+  }
+
+  .modal-content textarea {
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+  }
+
+  .modal-content button {
+    border: none;
+  }
+}

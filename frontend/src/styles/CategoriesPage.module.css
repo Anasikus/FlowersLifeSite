@@ -1,0 +1,89 @@
+.container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  color: #000;
+  min-height: 100vh;
+}
+
+.title {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  background-color: #0063eb;
+  cursor: pointer;
+  width: 20%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thead, 
+.tr {
+  background-color: #e0e0e0;
+}
+
+.th,
+.td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.editButton {
+  background-color: #0063eb;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.deleteButton {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Dark mode overrides */
+:global(body[data-theme="dark"]) .container {
+  background-color: #121212;
+  color: #f0f0f0;
+}
+
+:global(body[data-theme="dark"]) .thead {
+  background-color: #1e1e1e;
+}
+
+:global(body[data-theme="dark"]) .editButton {
+  background-color: #4c8aff;
+}
+
+:global(body[data-theme="dark"]) .deleteButton {
+  background-color: #ff6f6f;
+  color: black;
+}

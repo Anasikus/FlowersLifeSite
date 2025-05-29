@@ -139,7 +139,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
             opacity: product.count === 0 ? 0.6 : 1,
           }}
           >
-          {product.count === 0 ? "Нет в наличии" : "🛒 Добавить в корзину"}
+          {product.count === 0 ? "Нет в наличии" : "🛒 В корзину"}
         </button>
 
 

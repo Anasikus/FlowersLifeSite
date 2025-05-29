@@ -4,6 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "../../components/AdminHeader";
 import type { User } from "../../types/User";
 
+import styles from "../../styles/UsersPage.module.css";
+
 const UsersPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filtered, setFiltered] = useState<User[]>([]);
@@ -57,52 +59,65 @@ const UsersPage = () => {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <AdminHeader />
-      <h1>Пользователи</h1>
+      <h1 className={styles.title}>Пользователи</h1>
 
       <input
         type="text"
         placeholder="Поиск по телефону..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: "1rem" }}
+        className={styles.searchInput}
       />
 
-      <table style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #ccc" }}>
-        <thead>
-          <tr style={{ backgroundColor: "#f5f5f5" }}>
-            <th>ID</th>
-            <th>Телефон</th>
-            <th>Роль</th>
-            <th>Изменить роль</th>
-            <th>Статус</th>
-            <th>Блокировка</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((u) => (
-            <tr key={u.id}>
-              <td>{u.id}</td>
-              <td>{u.username}</td>
-              <td>{u.role}</td>
-              <td>
-                <select value={u.role} onChange={(e) => changeRole(u.id, e.target.value)}>
-                  <option value="user">Пользователь</option>
-                  <option value="employee">Сотрудник</option>
-                  <option value="admin">Админ</option>
-                </select>
-              </td>
-              <td>{u.is_blocked ? "Заблокирован" : "Активен"}</td>
-              <td>
-                <button onClick={() => toggleBlock(u.id, u.is_blocked)}>
-                  {u.is_blocked ? "Разблокировать" : "Заблокировать"}
-                </button>
-              </td>
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <thead>
+            <tr className={styles.tableHeaderRow}>
+              <th className={styles.th}>ID</th>
+              <th className={styles.th}>Телефон</th>
+              <th className={styles.th}>Роль</th>
+              <th className={styles.th}>Изменить роль</th>
+              <th className={styles.th}>Статус</th>
+              <th className={styles.th}>Блокировка</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.map((u) => (
+              <tr key={u.id} className={styles.tableRow}>
+                <td className={styles.td}>{u.id}</td>
+                <td className={styles.td}>{u.username}</td>
+                <td className={styles.td}>{u.role}</td>
+                <td className={styles.td}>
+                  <select
+                    value={u.role}
+                    onChange={(e) => changeRole(u.id, e.target.value)}
+                    className={styles.select}
+                  >
+                    <option value="user">Пользователь</option>
+                    <option value="employee">Сотрудник</option>
+                    <option value="admin">Админ</option>
+                  </select>
+                </td>
+                <td className={styles.td}>
+                  {u.is_blocked ? "Заблокирован" : "Активен"}
+                </td>
+                <td className={styles.td}>
+                  <button
+                    onClick={() => toggleBlock(u.id, u.is_blocked)}
+                    className={
+                      u.is_blocked ? styles.unblockButton : styles.blockButton
+                    }
+                  >
+                    {u.is_blocked ? "Разблокировать" : "Заблокировать"}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

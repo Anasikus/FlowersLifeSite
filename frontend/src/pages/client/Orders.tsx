@@ -290,14 +290,7 @@ const Orders = () => {
           display: "flex", justifyContent: "center", alignItems: "center",
           zIndex: 1000
         }}>
-          <div style={{
-            backgroundColor: "white",
-            padding: "2rem",
-            borderRadius: "8px",
-            maxWidth: "500px",
-            width: "100%",
-            boxShadow: "0 0 10px rgba(0,0,0,0.3)"
-          }}>
+          <div className="modal-content">
             <h3>📝 Отзыв о {selectedProduct.nameProducts}</h3>
 
             <label>Оценка:</label>

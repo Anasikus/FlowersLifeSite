@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
+import styles from "../../styles/CardList.module.css";
 
 interface CartItem {
   idBasket: number;
@@ -113,51 +114,24 @@ const Cart = () => {
   return (
     <>
       <Header />
-      <div
-        style={{
-          padding: "2rem",
-          maxWidth: "800px",
-          margin: "0 auto",
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h2 style={{ color: "#d63384", marginBottom: "1.5rem" }}>🛒 Ваша корзина</h2>
+      <div className={styles.container}>
+        <h2 className={styles.title}>🛒 Ваша корзина</h2>
 
         {cart.length === 0 ? (
           <p style={{ textAlign: "center", color: "#777" }}>Корзина пуста</p>
         ) : (
           <>
-            <ul style={{ listStyle: "none", padding: 0 }}>
+            <ul className={styles.cardList}>
               {cart.map((item) => {
                 const isMaxCount = item.count >= item.availableStock;
                 return (
-                  <li
+                  <li className={styles.cardItem}
                     key={item.idBasket}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      marginBottom: "1rem",
-                      backgroundColor: "#fff",
-                      padding: "1rem",
-                      borderRadius: "8px",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-                      flexWrap: "wrap",
-                    }}
                   >
                     <div style={{ display: "flex", gap: "1rem", flex: 1, alignItems: "center" }}>
-                      <img
+                      <img className={styles.cardImage}
                         src={item.image ? `http://localhost:4000/${item.image}` : "/placeholder.png"}
                         alt={item.name}
-                        style={{
-                          width: "80px",
-                          height: "80px",
-                          objectFit: "cover",
-                          borderRadius: "8px",
-                          border: "1px solid #eee",
-                        }}
                       />
                       <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
                         <strong style={{ fontSize: "1.1rem" }}>{item.name}</strong>
@@ -200,7 +174,7 @@ const Cart = () => {
               })}
             </ul>
 
-            <h3 style={{ marginTop: "2rem", color: "#111" }}>Итого: {total}₽</h3>
+            <h3 className="text">Итого: {total}₽</h3>
 
             <button onClick={handleOrder} style={orderButtonStyle}>
               Оформить заказ
@@ -229,6 +203,7 @@ const deleteStyle: React.CSSProperties = {
   borderRadius: "4px",
   cursor: "pointer",
   height: "fit-content",
+  width: "40px"
 };
 
 const orderButtonStyle: React.CSSProperties = {

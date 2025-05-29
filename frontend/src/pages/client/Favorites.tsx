@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
+import styles from "../../styles/CardList.module.css";
 
 interface Product {
   idProducts: number;
@@ -84,55 +85,28 @@ const Favorites = () => {
   return (
     <>
       <Header />
-      <div
-        style={{
-          padding: "2rem",
-          maxWidth: "800px",
-          margin: "0 auto",
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        }}
-      >
-        <h2 style={{ color: "#0d6efd", marginBottom: "1.5rem" }}>⭐ Избранные товары</h2>
+      <div className={styles.container}>
+        <h2 className={styles.title}>⭐ Избранные товары</h2>
 
         {favorites.length === 0 ? (
           <p style={{ textAlign: "center", color: "#777" }}>Список избранного пуст</p>
         ) : (
-          <ul style={{ listStyle: "none", padding: 0 }}>
+          <ul className={styles.cardList}>
             {favorites.map((item) => {
               const outOfStock = item.count === 0;
 
               return (
-                <li
+                <li className={styles.cardItem}
                   key={item.idProducts}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "1rem",
-                    backgroundColor: "#fff",
-                    padding: "1rem",
-                    borderRadius: "8px",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-                    flexWrap: "wrap",
-                  }}
                 >
                   <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                    <img
+                    <img className={styles.cardImage}
                       src={item.photo ? `http://localhost:4000/${item.photo}` : "/placeholder.png"}
                       alt={item.nameProducts}
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                        border: "1px solid #eee",
-                      }}
                     />
                     <div>
                       <strong>{item.nameProducts}</strong>
-                      <div style={{ marginTop: "0.25rem", color: "#555" }}>{item.cost}₽</div>
+                      <div className="text">{item.cost}₽</div>
                       <div style={{ fontSize: "0.85rem", color: outOfStock ? "red" : "green" }}>
                         {outOfStock ? "Нет в наличии" : `В наличии: ${item.count}`}
                       </div>

@@ -1,21 +1,32 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
 
 const AdminHeader = () => {
   const { role, user, logout } = useAuth();
   const navigate = useNavigate();
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+
+  useEffect(() => {
+    document.body.dataset.theme = theme;
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === "light" ? "dark" : "light"));
+  };
 
   const handleLogout = () => {
-    logout(); // очищает токен/контекст
-    navigate("/login"); // перенаправление на страницу входа
+    logout();
+    navigate("/login");
   };
 
   return (
     <nav
       style={{
         padding: "1rem",
-        backgroundColor: "#222",
-        color: "#fff",
+        backgroundColor: theme === "dark" ? "#222" : "#f8f9fa",
+        color: theme === "dark" ? "#fff" : "#000",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center"
@@ -23,77 +34,65 @@ const AdminHeader = () => {
     >
       {/* Левая часть — навигация */}
       <div style={{ display: "flex", gap: "1rem" }}>
-        <NavLink
-          to="/admin/orders"
-          style={({ isActive }) => ({
-            color: isActive ? "#0d6efd" : "#fff",
-            textDecoration: "none",
-            fontWeight: "bold"
-          })}
-        >
-          Заказы
-        </NavLink>
-        <NavLink
-          to="/admin/products"
-          style={({ isActive }) => ({
-            color: isActive ? "#0d6efd" : "#fff",
-            textDecoration: "none",
-            fontWeight: "bold"
-          })}
-        >
-          Товары
-        </NavLink>
-        <NavLink
-          to="/admin/categories"
-          style={({ isActive }) => ({
-            color: isActive ? "#0d6efd" : "#fff",
-            textDecoration: "none",
-            fontWeight: "bold"
-          })}
-        >
-          Категории
-        </NavLink>
-        {role === "admin" && (
-          <>
-            <NavLink
-              to="/admin/users"
-              style={({ isActive }) => ({
-                color: isActive ? "#0d6efd" : "#fff",
-                textDecoration: "none",
-                fontWeight: "bold"
-              })}
-            >
-              Пользователи
-            </NavLink>
-            <NavLink
-              to="/admin/addresses"
-              style={({ isActive }) => ({
-                color: isActive ? "#0d6efd" : "#fff",
-                textDecoration: "none",
-                fontWeight: "bold"
-              })}
-            >
-              Адреса
-            </NavLink>
-          </>
-        )}
-
-        <NavLink
-          to="/admin/stats"
-          style={({ isActive }) => ({
-            color: isActive ? "#0d6efd" : "#fff",
-            textDecoration: "none",
-            fontWeight: "bold"
-          })}
-        >
-          Аналитика
-        </NavLink>
+        {[
+          { to: "/admin/orders", label: "Заказы" },
+          { to: "/admin/products", label: "Товары" },
+          { to: "/admin/categories", label: "Категории" },
+          ...(role === "admin"
+            ? [
+                { to: "/admin/users", label: "Пользователи" },
+                { to: "/admin/addresses", label: "Адреса" }
+              ]
+            : []),
+          { to: "/admin/stats", label: "Аналитика" }
+        ].map(({ to, label }) => (
+          <NavLink
+            key={to}
+            to={to}
+            style={({ isActive }) => ({
+              color: isActive
+                ? "#0d6efd"
+                : theme === "dark"
+                ? "#fff"
+                : "#000",
+              textDecoration: "none",
+              fontWeight: "bold"
+            })}
+          >
+            {label}
+          </NavLink>
+        ))}
       </div>
 
-      {/* Правая часть — имя пользователя и выход */}
+      {/* Правая часть — имя пользователя, тема и выход */}
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         <span>{user?.username || "Неизвестный пользователь"}</span>
-        <button onClick={handleLogout} style={{ backgroundColor: "#dc3545", color: "#fff", border: "none", padding: "5px 10px", cursor: "pointer" }}>
+
+        <button
+          onClick={toggleTheme}
+          style={{
+            backgroundColor: theme === "dark" ? "#0d6efd" : "#6c757d",
+            color: "#fff",
+            border: "none",
+            padding: "5px 10px",
+            borderRadius: "5px",
+            cursor: "pointer"
+          }}
+        >
+          {theme === "dark" ? "Светлая тема" : "Тёмная тема"}
+        </button>
+
+        <button
+          onClick={handleLogout}
+          style={{
+            backgroundColor: "#dc3545",
+            color: "#fff",
+            border: "none",
+            padding: "5px 10px",
+            cursor: "pointer",
+            borderRadius: "5px"
+          }}
+        >
           Выйти
         </button>
       </div>

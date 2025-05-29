@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import axios from "axios";
 import AdminHeader from "../../components/AdminHeader";
+import styles from "../../styles/AdminProductsPage.module.css";
 
 interface Product {
   idProducts: number;
@@ -162,16 +163,16 @@ const AdminProductsPage = () => {
   );
 
   return (
-    <div className="p-4">
+    <div className={styles.page}>
       <AdminHeader />
-      <h2 className="text-xl font-bold mb-4">Управление товарами</h2>
+      <h2 className={styles.title}>Управление товарами</h2>
 
       <input
         type="text"
         placeholder="Поиск по названию..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 p-2 border w-full"
+        className={styles.searchInput}
       />
 
       <button
@@ -181,46 +182,86 @@ const AdminProductsPage = () => {
           setEditProductId(null);
           setShowModal(true);
         }}
-        className="bg-blue-500 text-white px-4 py-2 mb-4"
+        className={styles.addButton}
       >
         Добавить товар
       </button>
 
-      {/* Модальное окно */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded shadow w-full max-w-md">
-            <h3 className="text-lg font-bold mb-4">
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h3 className={styles.modalTitle}>
               {isEditing ? "Редактировать товар" : "Добавить товар"}
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-2">
-              <input name="nameProducts" placeholder="Название" value={form.nameProducts} onChange={handleChange} className="border p-2 w-full" />
-              <input name="cost" placeholder="Цена" value={form.cost} onChange={handleChange} className="border p-2 w-full" />
-              <input name="count" placeholder="Количество" value={form.count} onChange={handleChange} className="border p-2 w-full" />
-              <select
-                name="codeCategory"
-                value={form.codeCategory}
-                onChange={handleChange}
-                className="border p-2 w-full"
-              >
-                <option value="">Выберите категорию</option>
-                {categories.map((category) => (
-                  <option key={category.codeCategory} value={category.codeCategory}>
-                    {category.title}
-                  </option>
-                ))}
-              </select>
+            <form onSubmit={handleSubmit}>
+              <div className={styles.formGroup}>
+                <input
+                  name="nameProducts"
+                  placeholder="Название"
+                  value={form.nameProducts}
+                  onChange={handleChange}
+                  className={styles.formInput}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <input
+                  name="cost"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Цена"
+                  value={form.cost}
+                  onChange={handleChange}
+                  className={styles.formInput}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <input
+                  name="count"
+                  type="number"
+                  min="0"
+                  placeholder="Количество"
+                  value={form.count}
+                  onChange={handleChange}
+                  className={styles.formInput}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <select
+                  name="codeCategory"
+                  value={form.codeCategory}
+                  onChange={handleChange}
+                  className={styles.formSelect}
+                  required
+                >
+                  <option value="">Выберите категорию</option>
+                  {categories.map((category) => (
+                    <option key={category.codeCategory} value={category.codeCategory}>
+                      {category.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className={styles.formGroup}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className={styles.formFile}
+                />
+              </div>
 
-              <input type="file" accept="image/*" onChange={handleFileChange} className="border p-2 w-full" />
-
-              <div className="flex justify-between">
-                <button type="submit" className="bg-green-500 text-white px-4 py-2">
+              <div className={styles.formActions}>
+                <button type="submit" className={styles.submitButton}>
                   {isEditing ? "Сохранить изменения" : "Добавить"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="bg-red-500 text-white px-4 py-2"
+                  className={styles.closeButton}
                 >
                   Закрыть
                 </button>
@@ -230,27 +271,28 @@ const AdminProductsPage = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className={styles.productsGrid}>
         {filteredProducts.map((product) => (
-          <div key={product.idProducts} className="border p-4 rounded shadow">
+          <div key={product.idProducts} className={styles.productCard}>
             <img
               src={product.photo ? `http://localhost:4000/${product.photo}` : "/placeholder.png"}
-              style={{ width: '200px', height: '200px', objectFit: 'cover', marginRight: '1rem' }}
+              alt={product.nameProducts}
+              className={styles.productImage}
             />
-            <h3 className="text-lg font-bold">{product.nameProducts}</h3>
-            <p>Цена: {product.cost} ₽</p>
-            <p>Количество: {product.count}</p>
-            <p>Категория: {getCategoryTitle(product.codeCategory)}</p>
-            <div className="flex gap-2 mt-2">
+            <h3 className={styles.productName}>{product.nameProducts}</h3>
+            <p className={styles.productInfo}>Цена: {product.cost} ₽</p>
+            <p className={styles.productInfo}>Количество: {product.count}</p>
+            <p className={styles.productInfo}>Категория: {getCategoryTitle(product.codeCategory)}</p>
+            <div className={styles.buttonGroup}>
               <button
                 onClick={() => handleEdit(product)}
-                className="bg-yellow-500 text-white px-4 py-1"
+                className={styles.editButton}
               >
                 Редактировать
               </button>
               <button
                 onClick={() => handleDelete(product.idProducts)}
-                className="bg-red-500 text-white px-4 py-1"
+                className={styles.deleteButton}
               >
                 Удалить
               </button>

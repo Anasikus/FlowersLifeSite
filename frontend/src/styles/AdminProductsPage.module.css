@@ -1,0 +1,321 @@
+/* Админка - страница управления товарами */
+
+.page {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  color: #000;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+  color: #000;
+  background-color: #fff;
+}
+
+.addButton {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.addButton:hover {
+  background-color: #0056b3;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .productsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.productCard {
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #000;
+}
+
+.productImage {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 12px;
+  background-color: #eee;
+}
+
+.productName {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.productInfo {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.buttonGroup {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+.editButton,
+.deleteButton {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.editButton {
+  background-color: #ffc107;
+}
+
+.editButton:hover {
+  background-color: #d39e00;
+}
+
+.deleteButton {
+  background-color: #dc3545;
+}
+
+.deleteButton:hover {
+  background-color: #a71d2a;
+}
+
+/* Модальное окно */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  color: #000;
+}
+
+.modalTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.formInput,
+.formSelect,
+.formFile {
+  padding: 10px 12px;
+  border: 1px solid #bbb;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+  color: #000;
+  background-color: #fff;
+}
+
+.formFile {
+  padding: 6px 12px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.submitButton {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color: #1e7e34;
+}
+
+.closeButton {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.closeButton:hover {
+  background-color: #a71d2a;
+}
+
+
+/* Dark theme overrides */
+:global(body[data-theme='dark']) .page {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+:global(body[data-theme='dark']) .title {
+  color: #ddd;
+}
+
+:global(body[data-theme='dark']) .searchInput {
+  background-color: #222;
+  border: 1px solid #555;
+  color: #eee;
+}
+
+:global(body[data-theme='dark']) .addButton {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+:global(body[data-theme='dark']) .addButton:hover {
+  background-color: #084298;
+}
+
+:global(body[data-theme='dark']) .productsGrid {
+  /* no changes needed */
+}
+
+:global(body[data-theme='dark']) .productCard {
+  background-color: #1e1e1e;
+  box-shadow: none;
+  color: #ddd;
+}
+
+:global(body[data-theme='dark']) .productImage {
+  background-color: #333;
+}
+
+:global(body[data-theme='dark']) .productName {
+  color: #fff;
+}
+
+:global(body[data-theme='dark']) .productInfo {
+  color: #bbb;
+}
+
+:global(body[data-theme='dark']) .editButton {
+  background-color: #e0a800;
+  color: #000;
+}
+
+:global(body[data-theme='dark']) .editButton:hover {
+  background-color: #ad8500;
+}
+
+:global(body[data-theme='dark']) .deleteButton {
+  background-color: #bb2d3b;
+}
+
+:global(body[data-theme='dark']) .deleteButton:hover {
+  background-color: #7d1a25;
+}
+
+:global(body[data-theme='dark']) .modalOverlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+:global(body[data-theme='dark']) .modalContent {
+  background-color: #1e1e1e;
+  color: #ddd;
+  box-shadow: 0 2px 12px rgba(255,255,255,0.1);
+}
+
+:global(body[data-theme='dark']) .modalTitle {
+  color: #eee;
+}
+
+:global(body[data-theme='dark']) .formInput,
+:global(body[data-theme='dark']) .formSelect,
+:global(body[data-theme='dark']) .formFile {
+  background-color: #222;
+  border: 1px solid #555;
+  color: #eee;
+}
+
+:global(body[data-theme='dark']) .submitButton {
+  background-color: #198754;
+  color: #fff;
+}
+
+:global(body[data-theme='dark']) .submitButton:hover {
+  background-color: #146c43;
+}
+
+:global(body[data-theme='dark']) .closeButton {
+  background-color: #bb2d3b;
+  color: #fff;
+}
+
+:global(body[data-theme='dark']) .closeButton:hover {
+  background-color: #7d1a25;
+}

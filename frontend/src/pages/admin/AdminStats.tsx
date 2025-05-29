@@ -3,10 +3,20 @@ import axios from 'axios';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import AdminHeader from '../../components/AdminHeader';
+import styles from '../../styles/AdminStats.module.css';
 
 interface DailyStat {
   date: string;
   count: number;
+}
+
+interface Review {
+  id: number;
+  rating: number;
+  text: string;
+  created_at: string;
+  surname: string;
+  name: string;
 }
 
 interface AdminStatsResponse {
@@ -19,17 +29,6 @@ interface AdminStatsResponse {
   allReviews: Review[];
 }
 
-
-interface Review {
-  id: number;
-  rating: number;
-  text: string;
-  created_at: string;
-  surname: string;
-  name: string;
-}
-
-
 const AdminStats = () => {
   const [stats, setStats] = useState<AdminStatsResponse>({
     totalOrders: 0,
@@ -37,10 +36,9 @@ const AdminStats = () => {
     totalSum: '0.00',
     dailyStats: [],
     totalReviews: 0,
-    averageRating: "",
-    allReviews: []
+    averageRating: '',
+    allReviews: [],
   });
-
 
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState(() =>
@@ -53,11 +51,14 @@ const AdminStats = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:4000/admin/stats?startDate=${startDate}&endDate=${endDate}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+      const response = await axios.get(
+        `http://localhost:4000/admin/stats?startDate=${startDate}&endDate=${endDate}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         }
-      });
+      );
       setStats(response.data);
     } catch (error) {
       console.error('Ошибка загрузки аналитики:', error);
@@ -83,105 +84,110 @@ const AdminStats = () => {
         label: 'Заказы за день',
         data: stats.dailyStats.map((item) => item.count),
         fill: false,
-        borderColor: 'rgba(75,192,192,1)',
-        tension: 0.2
-      }
-    ]
+        borderColor: '#2563eb',
+        backgroundColor: '#2563eb',
+        tension: 0.3,
+      },
+    ],
   };
 
-  if (loading) return <div>Загрузка...</div>;
+  if (loading) return <div style={{ padding: 24, fontSize: '18px' }}>Загрузка...</div>;
 
   return (
-    <div className="p-6">
+    <div className={styles.container}>
       <AdminHeader />
-      <h2 className="text-2xl font-bold mb-4">Аналитика</h2>
+      <h2 className={styles.title}>Аналитика</h2>
 
-      {/* Выбор периода */}
-      <div className="flex gap-4 mb-6 items-end">
+      <div className={styles.periodBlock}>
         <div>
-          <label className="block text-sm font-medium">С:</label>
+          <label className={styles.label}>С:</label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="border rounded p-2"
+            className={styles.input}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium">По:</label>
+          <label className={styles.label}>По:</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="border rounded p-2"
+            className={styles.input}
           />
         </div>
-        <button
-          onClick={handlePeriodChange}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
+        <button onClick={handlePeriodChange} className={styles.button}>
           Применить
         </button>
       </div>
 
-      {/* Основная статистика */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Всего заказов</h3>
-          <p className="text-2xl">{stats.totalOrders}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Клиентов</h3>
-          <p className="text-2xl">{stats.totalClients}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Общая сумма</h3>
-          <p className="text-2xl">{stats.totalSum} ₽</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Отзывы</h3>
-          <p className="text-2xl">{stats.totalReviews}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h3 className="text-lg font-semibold">Средняя оценка</h3>
-          <p className="text-2xl">{stats.averageRating} ★</p>
+      <div className={styles.statGrid}>
+        <StatCard title="Всего заказов" value={stats.totalOrders} />
+        <StatCard title="Клиентов" value={stats.totalClients} />
+        <StatCard title="Общая сумма" value={`${stats.totalSum} ₽`} />
+        <StatCard title="Отзывы" value={stats.totalReviews} />
+        <StatCard title="Средняя оценка" value={`${stats.averageRating} ★`} />
+      </div>
+
+      <div className={styles.card}>
+        <h3 className={styles.sectionTitle}>График заказов</h3>
+        <div style={{ width: '100%', overflowX: 'auto' }}>
+          <div style={{ width: '100%', minWidth: '400px', height: '500px' }}>
+            <Line
+              data={chartData}
+              options={{
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                  legend: { display: true },
+                },
+                scales: {
+                  x: {
+                    ticks: {
+                      autoSkip: true,
+                      maxTicksLimit: 10,
+                    },
+                  },
+                },
+              }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* График */}
-      <div className="bg-white p-4 rounded shadow"
-        style={{ height: "500px", width: "1157px" }}
-      >
-        <h3 className="text-lg font-semibold mb-2">График заказов</h3>
-        <Line data={chartData} />
+      <div className={styles.card}>
+        <h3 className={styles.sectionTitle}>Отзывы клиентов</h3>
+        {stats.allReviews.length === 0 ? (
+          <p style={{ color: '#6b7280' }}>Отзывов пока нет.</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {stats.allReviews.map((review) => (
+              <li key={review.id} style={{ padding: '16px 0', borderBottom: '1px solid #e5e7eb' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span className={styles.reviewName}>
+                    {review.surname} {review.name}
+                  </span>
+                  <span className={styles.reviewRating}>★ {review.rating}</span>
+                </div>
+                <p className={styles.reviewText}>{review.text}</p>
+                <p className={styles.reviewDate}>
+                  {new Date(review.created_at).toLocaleDateString()}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-      <div className="bg-white p-4 rounded shadow mt-6">
-      <h3 className="text-lg font-semibold mb-2">Отзывы клиентов</h3>
-      {stats.allReviews.length === 0 ? (
-        <p>Отзывов пока нет.</p>
-      ) : (
-        <ul className="space-y-4">
-          {stats.allReviews.map((review) => (
-            <li key={review.id} className="border-b pb-2">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold">
-                  {review.surname} {review.name}
-                </span>
-                <span className="text-yellow-500 text-lg">★ {review.rating}</span>
-              </div>
-              <p className="text-gray-700">{review.text}</p>
-              <p className="text-sm text-gray-500">
-                {new Date(review.created_at).toLocaleDateString()}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
-
-  </div>
-    
   );
 };
+
+const StatCard = ({ title, value }: { title: string; value: string | number }) => (
+  <div className={styles.statCard}>
+    <h4 className={styles.statTitle}>{title}</h4>
+    <p className={styles.statValue}>{value}</p>
+  </div>
+);
 
 export default AdminStats;

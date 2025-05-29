@@ -9,7 +9,42 @@
   font-size: 20px;
   height: 80px;
 }
+:global(body[data-theme="dark"]) .header {
+  background-color: #222;
+  color: white;
+}
 
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.nav a {
+  margin-left: 1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Кнопка выхода */
+.logout-btn {
+  margin-left: 1rem;
+  background: none;
+  border: 1px solid currentColor;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Кнопка смены темы */
+.theme-toggle {
+  margin-right: 1rem;
+  background: none;
+  border: 1px solid currentColor;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: inherit;
+}
 .logo {
   font-size: 2rem;
   font-weight: bold;
@@ -47,4 +82,14 @@
 
 .logout-btn:hover {
   text-decoration: underline;
+}
+
+.theme-toggle {
+  margin-left: 1rem;
+  background: transparent;
+  border: 1px solid currentColor;
+  padding: 0.25rem 0.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 150px;
 }

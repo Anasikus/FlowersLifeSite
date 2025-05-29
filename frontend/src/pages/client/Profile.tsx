@@ -10,7 +10,9 @@ interface UserProfile {
   patronymic: string;
   dateOfBirth: string;
   mail: string;
-  address: string; // здесь будет idAddress
+  address: number; // idAddress
+  addressName?: string; // опционально название, для отображения
+
 }
 
 interface Address {
@@ -36,8 +38,13 @@ const Profile = () => {
         });
         const data = await res.json();
         if (res.ok) {
-          setProfile(data);
-          setFormData(data);
+          const updatedProfile = {
+            ...data,
+            address: parseInt(data.address), // преобразуем строку idAddress в число
+            addressName: data.address // сохраним название отдельно
+          };
+          setProfile(updatedProfile);
+          setFormData(updatedProfile);
         } else {
           console.error('Ошибка получения профиля:', data.message);
         }
@@ -94,7 +101,7 @@ const Profile = () => {
       form.append('dateOfBirth', formData.dateOfBirth);
       form.append('mail', formData.mail);
       form.append('username', formData.username);
-      form.append('address', formData.address); // это idAddress
+      form.append('address', formData.address.toString()); // это idAddress
       if (photoFile) {
         form.append('photo', photoFile);
       }
@@ -137,7 +144,7 @@ const Profile = () => {
             <p><strong>Дата рождения:</strong> {profile?.dateOfBirth}</p>
             <p><strong>Почта:</strong> {profile?.mail}</p>
             <p><strong>Телефон:</strong> {profile?.username}</p>
-            <p><strong>Адрес:</strong> {addresses.find(a => a.idAddress.toString() === profile?.address)?.name || 'Неизвестно'}</p>
+            <p><strong>Адрес:</strong> {addresses.find(a => a.idAddress === profile?.address)?.name || profile?.addressName || 'Неизвестно'}</p>
             <button onClick={() => setIsEditing(true)}>Редактировать</button>
           </div>
         ) : (
@@ -149,12 +156,19 @@ const Profile = () => {
             <label>Почта: <input name="mail" value={formData.mail} onChange={handleChange} /></label><br />
             <label>Телефон: <input name="username" value={formData.username} onChange={handleChange} /></label><br />
             <label>Адрес доставки:
-              <select name="address" value={formData.address} onChange={handleChange}>
-                <option value="">Выберите адрес</option>
-                {addresses.map(addr => (
-                  <option key={addr.idAddress} value={addr.idAddress}>{addr.name}</option>
-                ))}
-              </select>
+            <select
+              name="address"
+              value={formData.address.toString()} // приведение к строке
+              onChange={(e) =>
+                setFormData({ ...formData, address: parseInt(e.target.value) }) // вернуть число
+              }
+            >
+              <option value="">Выберите адрес</option>
+              {addresses.map(addr => (
+                <option key={addr.idAddress} value={addr.idAddress}>{addr.name}</option>
+              ))}
+            </select>
+
             </label><br />
             <label>Фото:
               <input type="file" accept="image/*" onChange={(e) => {

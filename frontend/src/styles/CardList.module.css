@@ -1,0 +1,100 @@
+.container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.cardList {
+  list-style: none;
+  padding: 0;
+}
+
+.cardItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.cardImage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.countControl {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+.deleteButton {
+  background-color: #ff6b6b;
+  width: 40px;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  height: fit-content;
+  font-size: 0.9rem;
+}
+
+.primaryButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 16px;
+  background-color: #d63384;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+:global(body[data-theme="dark"]) .container {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+:global(body[data-theme="dark"]) .cardItem {
+  background-color: #2a2a2a;
+  color: #f0f0f0;
+}
+
+:global(body[data-theme="dark"]) .cardImage {
+  border-color: #444;
+}
+
+:global(body[data-theme="dark"]) .deleteButton {
+  background-color: #ff8787;
+  color: black;
+}
+
+:global(body[data-theme="dark"]) .primaryButton {
+  background-color: #ff4fa1;
+  color: black;
+}
+:global(body[data-theme="dark"]) .text {
+  color: white;
+}

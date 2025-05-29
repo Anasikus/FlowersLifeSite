@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Catalog from "./pages/client/Catalog";
@@ -16,6 +17,11 @@ import UsersPage from "./pages/admin/UsersPage";
 import AdminAddressesPage from "./pages/admin/AdminAddressesPage";
 import AdminStats from "./pages/admin/AdminStats";
 import AdminProductsPage from "./pages/admin/AdminProductsPage";
+import './index.css';
+
+
+const savedTheme = localStorage.getItem("theme") || "light";
+document.body.dataset.theme = savedTheme;
 
 // Компонент автоматической переадресации
 const RoleRedirect = () => {
@@ -36,6 +42,7 @@ const RoleRedirect = () => {
 };
 
 const App = () => {
+  
   return (
     <Router>
       <Routes>
