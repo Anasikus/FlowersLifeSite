@@ -25,7 +25,8 @@ const getUserProfile = async (req, res) => {
 
     // Добавим URL для получения фото
     const profile = users[0];
-    profile.photo = `/users/photo/${userId}`;
+    profile.photo = `/api/photo/${userId}`; // ✅ правильно, если роут теперь по /api
+
 
     res.json(profile);
   } catch (error) {

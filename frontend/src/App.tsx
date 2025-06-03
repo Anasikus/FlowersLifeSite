@@ -17,7 +17,9 @@ import UsersPage from "./pages/admin/UsersPage";
 import AdminAddressesPage from "./pages/admin/AdminAddressesPage";
 import AdminStats from "./pages/admin/AdminStats";
 import AdminProductsPage from "./pages/admin/AdminProductsPage";
+import FeedbackPage from "./pages/client/FeedbackPage";
 import './index.css';
+import AdminFeedbackPage from "./pages/admin/AdminFeedbackPage";
 
 
 const savedTheme = localStorage.getItem("theme") || "light";
@@ -62,6 +64,8 @@ const App = () => {
         <Route path="/admin/addresses" element={<AdminAddressesPage />} />
         <Route path="/admin/stats" element={<AdminStats />} />
         <Route path="/admin/products" element={<AdminProductsPage/>} />
+        <Route path="/feedback" element={<FeedbackPage />} />
+        <Route path="/admin/feedback" element={<AdminFeedbackPage />} />
       </Routes>
     </Router>
   );

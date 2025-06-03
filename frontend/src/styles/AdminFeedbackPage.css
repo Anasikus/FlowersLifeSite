@@ -1,0 +1,216 @@
+/* === Обёртка для страницы обратной связи администратора === */
+.admin-feedback-page {
+  min-height: 100vh;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Используем .admin-feedback-page в качестве корня для всех селекторов */
+.admin-feedback-page .admin-layout {
+  display: flex;
+  gap: 20px;
+}
+
+.admin-feedback-page .thread-list {
+  width: 35%;
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.admin-feedback-page .thread-item {
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+
+.admin-feedback-page .thread-item h4,
+.admin-feedback-page .thread-item p,
+.admin-feedback-page .thread-item span {
+  margin: 0;
+  font-size: inherit;
+}
+
+.admin-feedback-page .thread-detail {
+  width: 65%;
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-feedback-page .chat-box {
+  border-radius: 6px;
+  padding: 10px;
+  max-height: 50vh;
+  overflow-y: auto;
+  border: 1px solid;
+}
+
+.admin-feedback-page .msg {
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  align-self: flex-start;
+}
+
+.admin-feedback-page .msg.user {
+  align-self: flex-start;
+}
+
+.admin-feedback-page .msg.admin {
+  align-self: flex-end;
+}
+
+.admin-feedback-page textarea {
+  padding: 10px;
+  border-radius: 6px;
+  resize: vertical;
+  min-height: 80px;
+  font-size: 14px;
+  border: 1px solid;
+}
+
+.admin-feedback-page button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 10px;
+  transition: background-color 0.2s;
+}
+
+.admin-feedback-page .close-btn {
+  background-color: #ff3a3a;
+}
+
+.admin-feedback-page .close-btn:hover {
+  background-color: #ff5e5e;
+}
+
+/* === Темы внутри .admin-feedback-page === */
+body[data-theme='light'] .admin-feedback-page {
+  background-color: #f9f9f9;
+  color: #000;
+}
+
+body[data-theme='light'] .admin-feedback-page h2 {
+  color: #0a3d62;
+}
+
+body[data-theme='light'] .admin-feedback-page .thread-list,
+body[data-theme='light'] .admin-feedback-page .thread-detail {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+}
+
+body[data-theme='light'] .admin-feedback-page .thread-item {
+  background-color: #e6e6e6;
+}
+
+body[data-theme='light'] .admin-feedback-page .thread-item:hover {
+  background-color: #d0e4ff;
+}
+
+body[data-theme='light'] .admin-feedback-page .thread-item.active {
+  border: 2px solid #0a3d62;
+}
+
+body[data-theme='light'] .admin-feedback-page .chat-box {
+  background-color: #f1f1f1;
+  border-color: #ccc;
+}
+
+body[data-theme='light'] .admin-feedback-page .msg {
+  background-color: #e0e0e0;
+  color: #000;
+}
+
+body[data-theme='light'] .admin-feedback-page .msg.user {
+  background-color: #cce5ff;
+}
+
+body[data-theme='light'] .admin-feedback-page .msg.admin {
+  background-color: #a3d1ff;
+}
+
+body[data-theme='light'] .admin-feedback-page textarea {
+  background-color: #fff;
+  color: #000;
+  border-color: #0a3d62;
+}
+
+body[data-theme='light'] .admin-feedback-page button {
+  background-color: #0a3d62;
+  color: white;
+}
+
+body[data-theme='light'] .admin-feedback-page button:hover {
+  background-color: #145b8a;
+}
+
+/* === Тёмная тема */
+body[data-theme='dark'] .admin-feedback-page {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+body[data-theme='dark'] .admin-feedback-page h2 {
+  color: #3A7DFF;
+}
+
+body[data-theme='dark'] .admin-feedback-page .thread-list,
+body[data-theme='dark'] .admin-feedback-page .thread-detail {
+  background-color: #1E1E2F;
+}
+
+body[data-theme='dark'] .admin-feedback-page .thread-item {
+  background-color: #2C2C3E;
+}
+
+body[data-theme='dark'] .admin-feedback-page .thread-item:hover {
+  background-color: #3A7DFF33;
+}
+
+body[data-theme='dark'] .admin-feedback-page .thread-item.active {
+  border: 2px solid #3A7DFF;
+}
+
+body[data-theme='dark'] .admin-feedback-page .chat-box {
+  background-color: #121212;
+  border-color: #2C2C3E;
+}
+
+body[data-theme='dark'] .admin-feedback-page .msg {
+  background-color: #2C2C3E;
+  color: #ffffff;
+}
+
+body[data-theme='dark'] .admin-feedback-page .msg.user {
+  background-color: #3A7DFF22;
+}
+
+body[data-theme='dark'] .admin-feedback-page .msg.admin {
+  background-color: #3A7DFF55;
+}
+
+body[data-theme='dark'] .admin-feedback-page textarea {
+  background-color: #2C2C3E;
+  color: #ffffff;
+  border-color: #3A7DFF;
+}
+
+body[data-theme='dark'] .admin-feedback-page button {
+  background-color: #3A7DFF;
+  color: #ffffff;
+}
+
+body[data-theme='dark'] .admin-feedback-page button:hover {
+  background-color: #5590ff;
+}

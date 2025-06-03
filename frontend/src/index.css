@@ -52,3 +52,23 @@ a, button {
     border: none;
   }
 }
+
+.feedbackButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease;
+  z-index: 10000;
+}
+
+.feedbackButton:hover {
+  background-color: #0056b3;
+}

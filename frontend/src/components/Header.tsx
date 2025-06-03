@@ -1,11 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import styles from "./Header.module.css";
+import FeedbackModal from "./FeedbackModal";
 import "../index.css"
 
 const Header = () => {
   const { token, logout } = useAuth();
   const navigate = useNavigate();
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -13,6 +16,7 @@ const Header = () => {
   };
 
   return (
+  <>
     <header className={styles.header}>
       <div className={styles.logo} onClick={() => navigate("/catalog")}>
         🌸 FlowersLife
@@ -29,6 +33,7 @@ const Header = () => {
       >
         🌓 Сменить тему
       </button>
+        {token && <Link to = "/feedback">Обращения</Link>}
         {token && <Link to="/favorites">Избранное</Link>}
         {token && <Link to="/cart">Корзина</Link>}
         {token && <Link to="/orders">Заказы</Link>}
@@ -39,12 +44,15 @@ const Header = () => {
           </button>
         ) : (
           <>
+            <Link to = "/feedback">Обращения</Link>
             <Link to="/login">Войти</Link>
             <Link to="/register">Регистрация</Link>
           </>
         )}
       </nav>
     </header>
+    {showFeedback && <FeedbackModal onClose={() => setShowFeedback(false)} />}
+    </>
   );
 };
 

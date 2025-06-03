@@ -10,7 +10,7 @@ const authenticateToken = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
+
     // Проверка блокировки пользователя
     const [users] = await db.query('SELECT is_blocked FROM users WHERE id = ?', [decoded.id]);
     if (users.length === 0) return res.status(401).json({ message: 'Пользователь не найден' });
@@ -26,6 +26,26 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
+const tryAuthenticate = async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return next(); // пользователь — гость
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const [users] = await db.query('SELECT is_blocked FROM users WHERE id = ?', [decoded.id]);
+
+    if (users.length > 0 && !users[0].is_blocked) {
+      req.user = decoded;
+    }
+  } catch (err) {
+    // Если токен битый — продолжаем как гость
+  }
+
+  next();
+};
+
 const requireRole = (roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
@@ -37,5 +57,6 @@ const requireRole = (roles) => {
 
 module.exports = {
   authenticateToken,
-  requireRole
+  requireRole,
+  tryAuthenticate,
 };

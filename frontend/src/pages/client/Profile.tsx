@@ -31,7 +31,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       const token = localStorage.getItem('token');
       try {
-        const res = await fetch('http://localhost:4000/users/profile', {
+        const res = await fetch('/api/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -106,7 +106,7 @@ const Profile = () => {
         form.append('photo', photoFile);
       }
 
-      const res = await fetch('http://localhost:4000/users/profile/update', {
+      const res = await fetch('/api/profile/update', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`
